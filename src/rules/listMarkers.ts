@@ -2,10 +2,25 @@ import { RuleResult, RuleDefinition } from "./types";
 
 function normalizeListMarkers(content: string): RuleResult {
 	let changesCount = 0;
+	let result = content;
 
-	const result = content.replace(/^(\s*)[*+](\s+)/gm, (match, indent, space) => {
+	// Normalize * and + to - (only when followed by space - avoids emphasis)
+	result = result.replace(/^(\s*)[*+](\s+)/gm, (match, indent, space) => {
 		changesCount++;
 		return `${indent}-${space}`;
+	});
+
+	// Ensure space after - marker (handles -text → - text)
+	// Exclude --- horizontal rules (use negative lookahead)
+	result = result.replace(/^(\s*)-(?![-\s])(.)/gm, (match, indent, char) => {
+		changesCount++;
+		return `${indent}- ${char}`;
+	});
+
+	// Ensure space after numbered list marker (handles 1.text → 1. text)
+	result = result.replace(/^(\s*)(\d+\.)(\S)/gm, (match, indent, num, char) => {
+		changesCount++;
+		return `${indent}${num} ${char}`;
 	});
 
 	return { content: result, changesCount };

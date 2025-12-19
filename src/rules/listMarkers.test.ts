@@ -86,4 +86,42 @@ Some text *emphasized* here`;
 		expect(result.content).toBe(`	- tab indented item`);
 		expect(result.changesCount).toBe(1);
 	});
+
+	it("adds space after - when missing", () => {
+		const result = listMarkersRule.fn("-text");
+		expect(result.content).toBe("- text");
+		expect(result.changesCount).toBe(1);
+	});
+
+	it("adds space after - before checkbox", () => {
+		const result = listMarkersRule.fn("-[x] task");
+		expect(result.content).toBe("- [x] task");
+		expect(result.changesCount).toBe(1);
+	});
+
+	it("adds space after numbered marker when missing", () => {
+		const result = listMarkersRule.fn("1.text");
+		expect(result.content).toBe("1. text");
+		expect(result.changesCount).toBe(1);
+	});
+
+	it("handles multiple numbered items without space", () => {
+		const input = `1.first
+2.second
+3.third`;
+		const result = listMarkersRule.fn(input);
+		expect(result.content).toBe(`1. first
+2. second
+3. third`);
+		expect(result.changesCount).toBe(3);
+	});
+
+	it("does not modify horizontal rules", () => {
+		const input = `---
+text
+---`;
+		const result = listMarkersRule.fn(input);
+		expect(result.content).toBe(input);
+		expect(result.changesCount).toBe(0);
+	});
 });

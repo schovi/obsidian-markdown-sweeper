@@ -21,6 +21,7 @@ import { tagNormalizationRule } from "./tagNormalization";
 import { codeFencesRule } from "./codeFences";
 import { emphasisRule } from "./emphasis";
 import { headingLevelsRule } from "./headingLevels";
+import { lineLeadingWhitespaceRule } from "./lineLeadingWhitespace";
 
 export const rules: RuleDefinition[] = [
 	// Blank lines
@@ -57,6 +58,9 @@ export const rules: RuleDefinition[] = [
 	htmlEntitiesRule,
 	htmlTagsRule,
 	codeFencesRule,
+
+	// Whitespace cleanup (after HTML conversion)
+	lineLeadingWhitespaceRule,
 
 	// Block elements
 	blockQuotesRule,
