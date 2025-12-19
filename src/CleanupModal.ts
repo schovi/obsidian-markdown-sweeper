@@ -167,7 +167,16 @@ export class CleanupModal extends Modal {
 	private renderRemovedLine(container: HTMLElement, line: string) {
 		const lineEl = container.createDiv({ cls: "md-cleanup-line md-cleanup-line-removed" });
 		lineEl.createSpan({ text: "- ", cls: "md-cleanup-prefix" });
-		this.renderLineWithWhitespace(lineEl, line, true);
+
+		// Check if this is a blank line (empty or whitespace-only)
+		if (line.trim() === "") {
+			if (line.length > 0) {
+				this.renderVisibleWhitespace(lineEl, line, "md-cleanup-char-removed");
+			}
+			lineEl.createSpan({ text: " ← removed", cls: "md-cleanup-blank-label" });
+		} else {
+			this.renderLineWithWhitespace(lineEl, line, true);
+		}
 	}
 
 	private renderAddedLine(container: HTMLElement, line: string) {
@@ -177,6 +186,13 @@ export class CleanupModal extends Modal {
 	}
 
 	private renderModifiedPair(container: HTMLElement, oldLine: string, newLine: string) {
+		// Check if this is whitespace-only change
+		if (this.isWhitespaceOnlyChange(oldLine, newLine)) {
+			// Show single line with whitespace indicator
+			this.renderWhitespaceOnlyChange(container, oldLine, newLine);
+			return;
+		}
+
 		// Render the removed line with character highlighting
 		const removedEl = container.createDiv({ cls: "md-cleanup-line md-cleanup-line-removed" });
 		removedEl.createSpan({ text: "- ", cls: "md-cleanup-prefix" });
@@ -186,6 +202,42 @@ export class CleanupModal extends Modal {
 		const addedEl = container.createDiv({ cls: "md-cleanup-line md-cleanup-line-added" });
 		addedEl.createSpan({ text: "+ ", cls: "md-cleanup-prefix" });
 		this.renderCharDiff(addedEl, oldLine, newLine, false);
+	}
+
+	private renderWhitespaceOnlyChange(container: HTMLElement, oldLine: string, newLine: string) {
+		const lineEl = container.createDiv({ cls: "md-cleanup-line md-cleanup-line-whitespace" });
+		lineEl.createSpan({ text: "  ", cls: "md-cleanup-prefix" });
+
+		// Detect leading and trailing whitespace changes
+		const oldLeading = oldLine.match(/^[ \t]*/)?.[0] || "";
+		const newLeading = newLine.match(/^[ \t]*/)?.[0] || "";
+		const oldTrailing = oldLine.match(/[ \t]*$/)?.[0] || "";
+		const newTrailing = newLine.match(/[ \t]*$/)?.[0] || "";
+
+		const removedLeading = oldLeading.slice(newLeading.length);
+		const removedTrailing = oldTrailing.slice(newTrailing.length);
+
+		if (newLine === "" && (removedLeading || removedTrailing)) {
+			// Blank line that had only whitespace
+			this.renderVisibleWhitespace(lineEl, oldLine, "md-cleanup-ws-removed");
+			lineEl.createSpan({
+				text: ` ← blank lines (${this.summary.trailingWhitespaceBlank})`,
+				cls: "md-cleanup-blank-label"
+			});
+		} else {
+			// Show removed leading whitespace
+			if (removedLeading) {
+				this.renderVisibleWhitespace(lineEl, removedLeading, "md-cleanup-ws-removed");
+			}
+
+			// Show the actual content
+			lineEl.createSpan({ text: newLine.trim() });
+
+			// Show removed trailing whitespace
+			if (removedTrailing) {
+				this.renderVisibleWhitespace(lineEl, removedTrailing, "md-cleanup-ws-removed");
+			}
+		}
 	}
 
 	private renderCharDiff(container: HTMLElement, oldLine: string, newLine: string, showOld: boolean) {
