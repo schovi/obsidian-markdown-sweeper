@@ -48,6 +48,7 @@ export const fixIndentationRule: RuleDefinition = {
 	id: "fixIndentation",
 	name: "Broken indentation",
 	group: "lists",
+	tier: "standard",
 	example: "········- item → ··- item",
 	fn: fixExcessiveIndentation,
 };

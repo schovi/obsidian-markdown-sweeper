@@ -155,4 +155,25 @@ describe("htmlTagsRule", () => {
 		expect(result.content).toBe("> quoted text");
 		expect(result.changesCount).toBe(1);
 	});
+
+	it("does not modify HTML inside code blocks", () => {
+		const input = "```\n<b>bold</b>\n```";
+		const result = htmlTagsRule.fn(input);
+		expect(result.content).toBe(input);
+		expect(result.changesCount).toBe(0);
+	});
+
+	it("does not modify HTML inside inline code", () => {
+		const input = "use `<div>` tag";
+		const result = htmlTagsRule.fn(input);
+		expect(result.content).toBe(input);
+		expect(result.changesCount).toBe(0);
+	});
+
+	it("modifies HTML outside code but not inside", () => {
+		const input = "<b>outside</b> `<b>inside</b>` <b>outside</b>";
+		const result = htmlTagsRule.fn(input);
+		expect(result.content).toBe("**outside** `<b>inside</b>` **outside**");
+		expect(result.changesCount).toBe(2);
+	});
 });

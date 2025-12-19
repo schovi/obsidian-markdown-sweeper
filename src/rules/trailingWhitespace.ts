@@ -26,6 +26,7 @@ export const trailingWhitespaceContentRule: RuleDefinition = {
 	id: "trailingWhitespaceContent",
 	name: "Trailing whitespace",
 	group: "whitespace",
+	tier: "minimal",
 	example: "text·· → text",
 	fn: removeTrailingWhitespaceContent,
 };
@@ -34,6 +35,7 @@ export const trailingWhitespaceBlankRule: RuleDefinition = {
 	id: "trailingWhitespaceBlank",
 	name: "Blank line whitespace",
 	group: "blankLines",
+	tier: "minimal",
 	example: "···(empty line) → (empty line)",
 	fn: removeTrailingWhitespaceBlank,
 };

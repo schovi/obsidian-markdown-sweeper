@@ -64,4 +64,25 @@ describe("smartQuotesRule", () => {
 		expect(result.content).toBe(input);
 		expect(result.changesCount).toBe(0);
 	});
+
+	it("does not modify code blocks", () => {
+		const input = "```\n\u201chello\u201d\n```";
+		const result = smartQuotesRule.fn(input);
+		expect(result.content).toBe(input);
+		expect(result.changesCount).toBe(0);
+	});
+
+	it("does not modify inline code", () => {
+		const input = "use `\u201cquoted\u201d` here";
+		const result = smartQuotesRule.fn(input);
+		expect(result.content).toBe(input);
+		expect(result.changesCount).toBe(0);
+	});
+
+	it("modifies text outside code but not inside", () => {
+		const input = "\u201coutside\u201d `\u201cinside\u201d` \u201coutside\u201d";
+		const result = smartQuotesRule.fn(input);
+		expect(result.content).toBe("\"outside\" `\u201cinside\u201d` \"outside\"");
+		expect(result.changesCount).toBe(4);
+	});
 });

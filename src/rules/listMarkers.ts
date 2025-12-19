@@ -15,6 +15,7 @@ export const listMarkersRule: RuleDefinition = {
 	id: "listMarkers",
 	name: "List markers",
 	group: "lists",
+	tier: "standard",
 	example: "* item → - item",
 	fn: normalizeListMarkers,
 };

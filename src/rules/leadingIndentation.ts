@@ -16,20 +16,23 @@ function removeCommonLeadingIndentation(content: string): RuleResult {
 		return { content, changesCount: 0 };
 	}
 
+	let changesCount = 0;
 	const result = lines
 		.map((line) => {
 			if (line.trim() === "") return line;
+			changesCount++;
 			return line.slice(minIndent);
 		})
 		.join("\n");
 
-	return { content: result, changesCount: minIndent };
+	return { content: result, changesCount };
 }
 
 export const leadingIndentationRule: RuleDefinition = {
 	id: "leadingIndentation",
 	name: "Common indentation",
 	group: "whitespace",
+	tier: "aggressive",
 	example: "····all lines indented → removed",
 	fn: removeCommonLeadingIndentation,
 };

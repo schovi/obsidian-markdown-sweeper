@@ -1,40 +1,132 @@
-# CLAUDE.md
+# md-cleanup
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+Obsidian plugin for cleaning up messy markdown. Shows diff preview before applying changes.
 
-## Project Overview
+## Quick Reference
 
-Obsidian plugin for cleaning up messy markdown with a diff preview before applying changes. Shows users what will be changed and lets them approve before modifying.
-
-## Commands
-
-```bash
-npm run dev          # Build in development mode (watch)
-npm run build        # Type-check and build for production
-npm run test         # Run all tests
-npm run test:watch   # Run tests in watch mode
-npx vitest run src/rules/blankLines.test.ts  # Run single test file
-```
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | Build in watch mode |
+| `npm run build` | Type-check + production build |
+| `npm run test` | Run all tests |
+| `npm run test:watch` | Tests in watch mode |
+| `npx vitest run src/rules/[name].test.ts` | Single test file |
 
 ## Architecture
 
 ### Entry Points
-- `src/main.ts` - Plugin registration, ribbon icon, command palette
-- `src/CleanupModal.ts` - Diff preview modal using `diff` library
 
-### Rules System
-Rules live in `src/rules/`. Each rule:
-- Implements `RuleDefinition` interface (id, name, fn)
-- Returns `RuleResult` with transformed content and change count
-- Is registered in `src/rules/registry.ts`
-- Has co-located tests (`ruleName.test.ts`)
+- `src/main.ts` - Plugin class, commands, ribbon icon
+- `src/CleanupModal.ts` - Diff preview UI using `diff` library
+- `src/settings.ts` - Settings tab + persistence
+- `src/presets.ts` - Preset tier logic (minimal/standard/aggressive)
 
-Adding a new rule:
-1. Create `src/rules/yourRule.ts` with function + exported `RuleDefinition`
-2. Add tests in `src/rules/yourRule.test.ts`
-3. Import and add to `rules` array in `registry.ts`
+### Rules System (`src/rules/`)
 
-### Key Types
-- `RuleDefinition` - Rule interface (id, name, fn)
-- `RuleResult` - { content, changesCount }
-- `CleanupSummary` - Aggregated results from all rules
+Each rule file exports a `RuleDefinition`:
+
+```typescript
+interface RuleDefinition {
+  id: string;           // camelCase identifier
+  name: string;         // Human-readable name
+  group: RuleGroup;     // Category for UI grouping
+  tier: PresetTier;     // minimal | standard | aggressive
+  example: string;      // Before → After example
+  fn: (content: string) => RuleResult;
+}
+
+interface RuleResult {
+  content: string;      // Transformed content
+  changesCount: number; // Number of modifications made
+}
+```
+
+**Key files:**
+
+- `types.ts` - RuleDefinition, RuleResult, RuleGroup, PresetTier
+- `registry.ts` - Ordered list of all rules (execution order matters)
+- `index.ts` - `applyAllRules()` orchestration
+
+### Adding a New Rule
+
+1. Create `src/rules/yourRule.ts`:
+
+```typescript
+import { RuleDefinition, RuleResult } from "./types";
+
+function yourRuleLogic(content: string): RuleResult {
+  let changesCount = 0;
+  const result = content.replace(/pattern/g, () => {
+    changesCount++;
+    return "replacement";
+  });
+  return { content: result, changesCount };
+}
+
+export const yourRule: RuleDefinition = {
+  id: "yourRule",
+  name: "Your Rule Name",
+  group: "formatting",
+  tier: "standard",
+  example: "before → after",
+  fn: yourRuleLogic,
+};
+```
+
+2. Create `src/rules/yourRule.test.ts`:
+
+```typescript
+import { describe, it, expect } from "vitest";
+import { yourRule } from "./yourRule";
+
+describe("yourRule", () => {
+  it("transforms X to Y", () => {
+    const result = yourRule.fn("input");
+    expect(result.content).toBe("expected");
+    expect(result.changesCount).toBe(1);
+  });
+
+  it("handles no changes", () => {
+    const result = yourRule.fn("unchanged");
+    expect(result.changesCount).toBe(0);
+  });
+});
+```
+
+3. Register in `src/rules/registry.ts`:
+
+```typescript
+import { yourRule } from "./yourRule";
+// Add to rules array in appropriate position
+```
+
+4. Update `README.md` rules table with the new rule
+
+**When modifying or removing rules:** Always update tests and README.md to match.
+
+### Rule Groups
+
+- `blankLines` - Empty line handling
+- `whitespace` - Spaces, tabs, indentation
+- `lists` - List markers, checkboxes, numbering
+- `formatting` - Quotes, emphasis, links
+- `headings` - Heading syntax
+- `code` - Code blocks, HTML entities
+- `blockElements` - Blockquotes
+- `obsidian` - Obsidian-specific (tags)
+
+### Common Patterns
+
+**Protecting code blocks:**
+
+When a rule shouldn't modify content inside code blocks, use `processOutsideCode`:
+
+```typescript
+function processOutsideCode(content: string, processor: (text: string) => string): string {
+  const parts: string[] = [];
+  const codePattern = /(```[\s\S]*?```|`[^`\n]+`)/g;
+  // splits content, processes non-code parts only
+}
+```
+
+Used by: emphasis, htmlEntities, tagNormalization

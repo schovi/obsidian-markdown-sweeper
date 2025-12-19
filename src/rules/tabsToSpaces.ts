@@ -15,6 +15,7 @@ export const tabsToSpacesRule: RuleDefinition = {
 	id: "tabsToSpaces",
 	name: "Tabs to spaces",
 	group: "whitespace",
+	tier: "standard",
 	example: "→item → ··item",
 	fn: convertLeadingTabsToSpaces,
 };

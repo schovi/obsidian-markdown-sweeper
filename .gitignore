@@ -10,3 +10,6 @@ node_modules
 
 # OS
 .DS_Store
+
+# Saved obsidian plugin data
+data.json

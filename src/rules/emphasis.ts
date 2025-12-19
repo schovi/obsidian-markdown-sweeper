@@ -1,4 +1,5 @@
 import { RuleResult, RuleDefinition } from "./types";
+import { processOutsideCode } from "./utils";
 
 function normalizeEmphasis(content: string): RuleResult {
 	let changesCount = 0;
@@ -38,35 +39,11 @@ function normalizeEmphasis(content: string): RuleResult {
 	return { content: result, changesCount };
 }
 
-function processOutsideCode(
-	content: string,
-	processor: (text: string) => string
-): string {
-	const parts: string[] = [];
-
-	const codePattern = /(```[\s\S]*?```|`[^`\n]+`)/g;
-	let lastIndex = 0;
-	let match;
-
-	while ((match = codePattern.exec(content)) !== null) {
-		if (match.index > lastIndex) {
-			parts.push(processor(content.slice(lastIndex, match.index)));
-		}
-		parts.push(match[0]);
-		lastIndex = match.index + match[0].length;
-	}
-
-	if (lastIndex < content.length) {
-		parts.push(processor(content.slice(lastIndex)));
-	}
-
-	return parts.join("");
-}
-
 export const emphasisRule: RuleDefinition = {
 	id: "emphasis",
 	name: "Emphasis style",
 	group: "formatting",
+	tier: "aggressive",
 	example: "_italic_ → *italic*",
 	fn: normalizeEmphasis,
 };

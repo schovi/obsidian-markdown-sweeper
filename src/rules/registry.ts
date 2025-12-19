@@ -14,7 +14,7 @@ import { listMarkersRule } from "./listMarkers";
 import { fixIndentationRule } from "./fixIndentation";
 import { emptyListItemsRule } from "./emptyListItems";
 import { eofNewlineRule } from "./eofNewline";
-import { horizontalRulesRule } from "./horizontalRules";
+import { horizontalRulesRule, horizontalRulesDedupeRule } from "./horizontalRules";
 import { orderedListsRule } from "./orderedLists";
 import { blockQuotesRule } from "./blockQuotes";
 import { tagNormalizationRule } from "./tagNormalization";
@@ -47,6 +47,7 @@ export const rules: RuleDefinition[] = [
 	linkSpacesRule,
 	emphasisRule,
 	horizontalRulesRule,
+	horizontalRulesDedupeRule,
 
 	// Headings
 	headingSpacesRule,

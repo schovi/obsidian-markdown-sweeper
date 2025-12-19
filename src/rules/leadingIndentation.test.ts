@@ -10,7 +10,7 @@ describe("leadingIndentationRule", () => {
 		expect(result.content).toBe(`line 1
 line 2
 line 3`);
-		expect(result.changesCount).toBe(2);
+		expect(result.changesCount).toBe(3);
 	});
 
 	it("removes common 4-space indentation", () => {
@@ -19,7 +19,7 @@ line 3`);
 		const result = leadingIndentationRule.fn(input);
 		expect(result.content).toBe(`line 1
 line 2`);
-		expect(result.changesCount).toBe(4);
+		expect(result.changesCount).toBe(2);
 	});
 
 	it("preserves relative indentation", () => {
@@ -30,7 +30,7 @@ line 2`);
 		expect(result.content).toBe(`parent
   child
 sibling`);
-		expect(result.changesCount).toBe(2);
+		expect(result.changesCount).toBe(3);
 	});
 
 	it("ignores empty lines when calculating minimum", () => {
@@ -70,7 +70,7 @@ line 3`;
 		const result = leadingIndentationRule.fn(input);
 		expect(result.content).toBe(`line 1
 line 2`);
-		expect(result.changesCount).toBe(1);
+		expect(result.changesCount).toBe(2);
 	});
 
 	it("returns unchanged for no indentation", () => {

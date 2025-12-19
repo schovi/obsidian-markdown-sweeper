@@ -1,4 +1,5 @@
 import { RuleResult, RuleDefinition } from "./types";
+import { processOutsideCode, escapeRegex } from "./utils";
 
 function decodeHtmlEntities(content: string): RuleResult {
 	let changesCount = 0;
@@ -28,39 +29,11 @@ function decodeHtmlEntities(content: string): RuleResult {
 	return { content: result, changesCount };
 }
 
-function processOutsideCode(
-	content: string,
-	processor: (text: string) => string
-): string {
-	const parts: string[] = [];
-
-	const codePattern = /(```[\s\S]*?```|`[^`\n]+`)/g;
-	let lastIndex = 0;
-	let match;
-
-	while ((match = codePattern.exec(content)) !== null) {
-		if (match.index > lastIndex) {
-			parts.push(processor(content.slice(lastIndex, match.index)));
-		}
-		parts.push(match[0]);
-		lastIndex = match.index + match[0].length;
-	}
-
-	if (lastIndex < content.length) {
-		parts.push(processor(content.slice(lastIndex)));
-	}
-
-	return parts.join("");
-}
-
-function escapeRegex(str: string): string {
-	return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-}
-
 export const htmlEntitiesRule: RuleDefinition = {
 	id: "htmlEntities",
 	name: "HTML entities",
 	group: "code",
+	tier: "aggressive",
 	example: "&amp; → &",
 	fn: decodeHtmlEntities,
 };

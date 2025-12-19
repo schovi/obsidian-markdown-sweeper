@@ -57,6 +57,7 @@ export const orderedListsRule: RuleDefinition = {
 	id: "orderedLists",
 	name: "Ordered list numbers",
 	group: "lists",
+	tier: "standard",
 	example: "1. 1. 1. → 1. 2. 3.",
 	fn: renumberOrderedLists,
 };

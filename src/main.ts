@@ -1,4 +1,4 @@
-import { Editor, MarkdownView, Notice, Plugin } from "obsidian";
+import { Editor, MarkdownView, Notice, Plugin, TFile } from "obsidian";
 import { applyAllRules } from "./rules";
 import { CleanupModal } from "./CleanupModal";
 import {
@@ -9,6 +9,7 @@ import {
 
 export default class MarkdownCleanupPlugin extends Plugin {
 	settings: MarkdownCleanupSettings;
+	private isCleaningFile = false;
 
 	async onload() {
 		await this.loadSettings();
@@ -26,6 +27,30 @@ export default class MarkdownCleanupPlugin extends Plugin {
 				this.runCleanupWithEditor(editor);
 			},
 		});
+
+		this.addCommand({
+			id: "quick-cleanup",
+			name: "Quick Cleanup (no preview)",
+			editorCallback: (editor: Editor) => {
+				this.runQuickCleanup(editor);
+			},
+		});
+
+		this.addCommand({
+			id: "paste-and-clean",
+			name: "Paste and Clean",
+			editorCallback: (editor: Editor) => {
+				this.pasteAndClean(editor);
+			},
+		});
+
+		this.registerEvent(
+			this.app.vault.on("modify", (file) => {
+				if (this.settings.cleanOnSave && file instanceof TFile && file.extension === "md") {
+					this.cleanFileOnSave(file);
+				}
+			})
+		);
 	}
 
 	async loadSettings() {
@@ -87,6 +112,64 @@ export default class MarkdownCleanupPlugin extends Plugin {
 			},
 			{ isPartial: true }
 		).open();
+	}
+
+	private runQuickCleanup(editor: Editor) {
+		const selection = editor.getSelection();
+
+		if (selection) {
+			const { content: cleaned, summary } = applyAllRules(selection, this.settings.enabledRules);
+			if (summary.totalChanges > 0) {
+				editor.replaceSelection(cleaned);
+				new Notice(`Cleaned ${summary.totalChanges} items in selection`);
+			} else {
+				new Notice("Selection already clean");
+			}
+		} else {
+			const content = editor.getValue();
+			const { content: cleaned, summary } = applyAllRules(content, this.settings.enabledRules);
+			if (summary.totalChanges > 0) {
+				editor.setValue(cleaned);
+				new Notice(`Cleaned ${summary.totalChanges} items`);
+			} else {
+				new Notice("Document already clean");
+			}
+		}
+	}
+
+	private async pasteAndClean(editor: Editor) {
+		try {
+			const clipboard = await navigator.clipboard.readText();
+			if (!clipboard) {
+				new Notice("Clipboard is empty");
+				return;
+			}
+
+			const { content: cleaned, summary } = applyAllRules(clipboard, this.settings.enabledRules);
+			editor.replaceSelection(cleaned);
+
+			if (summary.totalChanges > 0) {
+				new Notice(`Pasted and cleaned ${summary.totalChanges} items`);
+			} else {
+				new Notice("Pasted (no cleanup needed)");
+			}
+		} catch {
+			new Notice("Failed to read clipboard");
+		}
+	}
+
+	private async cleanFileOnSave(file: TFile) {
+		if (this.isCleaningFile) return;
+
+		const content = await this.app.vault.read(file);
+		const { content: cleaned, summary } = applyAllRules(content, this.settings.enabledRules);
+
+		if (summary.totalChanges > 0) {
+			this.isCleaningFile = true;
+			await this.app.vault.modify(file, cleaned);
+			this.isCleaningFile = false;
+			new Notice(`Auto-cleaned ${summary.totalChanges} items`);
+		}
 	}
 
 	onunload() {}

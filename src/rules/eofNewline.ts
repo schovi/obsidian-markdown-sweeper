@@ -19,6 +19,7 @@ export const eofNewlineRule: RuleDefinition = {
 	id: "eofNewline",
 	name: "EOF newline",
 	group: "blankLines",
+	tier: "minimal",
 	example: "text\\n\\n\\n → text\\n",
 	fn: normalizeEofNewline,
 };

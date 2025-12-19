@@ -45,6 +45,7 @@ export const emptyListItemsRule: RuleDefinition = {
 	id: "emptyListItems",
 	name: "Empty list items",
 	group: "lists",
+	tier: "standard",
 	example: "- (empty) → removed",
 	fn: removeEmptyListItems,
 };

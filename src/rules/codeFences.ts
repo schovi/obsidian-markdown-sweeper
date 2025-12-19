@@ -17,6 +17,7 @@ export const codeFencesRule: RuleDefinition = {
 	id: "codeFences",
 	name: "Code fences",
 	group: "code",
+	tier: "aggressive",
 	example: "~~~ → ```",
 	fn: normalizeCodeFences,
 };

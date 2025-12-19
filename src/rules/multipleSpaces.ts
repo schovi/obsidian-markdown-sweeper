@@ -26,6 +26,7 @@ export const multipleSpacesRule: RuleDefinition = {
 	id: "multipleSpaces",
 	name: "Multiple spaces",
 	group: "whitespace",
+	tier: "standard",
 	example: "too····many → too many",
 	fn: collapseMultipleSpaces,
 };

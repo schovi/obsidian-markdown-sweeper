@@ -28,6 +28,7 @@ export const blockQuotesRule: RuleDefinition = {
 	id: "blockQuotes",
 	name: "Block quotes",
 	group: "blockElements",
+	tier: "aggressive",
 	example: ">text → > text",
 	fn: cleanupBlockQuotes,
 };

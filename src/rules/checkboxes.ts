@@ -22,6 +22,7 @@ export const checkboxesRule: RuleDefinition = {
 	id: "checkboxes",
 	name: "Checkboxes",
 	group: "lists",
+	tier: "standard",
 	example: "- [] task → - [ ] task",
 	fn: normalizeCheckboxes,
 };
