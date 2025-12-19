@@ -1,0 +1,10 @@
+{
+	"id": "md-cleanup",
+	"name": "Markdown Cleanup",
+	"version": "0.0.1",
+	"minAppVersion": "0.15.0",
+	"description": "Clean up messy markdown with a diff preview before applying changes",
+	"author": "schovi",
+	"authorUrl": "https://github.com/schovi",
+	"isDesktopOnly": false
+}

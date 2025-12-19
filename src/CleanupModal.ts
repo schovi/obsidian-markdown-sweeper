@@ -1,0 +1,277 @@
+import { App, Modal } from "obsidian";
+import { diffLines, diffChars, Change } from "diff";
+import { CleanupSummary, formatSummary } from "./rules";
+
+interface LinePair {
+	type: "unchanged" | "removed" | "added" | "modified";
+	oldLine?: string;
+	newLine?: string;
+}
+
+export class CleanupModal extends Modal {
+	private originalContent: string;
+	private cleanedContent: string;
+	private summary: CleanupSummary;
+	private onApply: () => void;
+
+	constructor(
+		app: App,
+		originalContent: string,
+		cleanedContent: string,
+		summary: CleanupSummary,
+		onApply: () => void
+	) {
+		super(app);
+		this.originalContent = originalContent;
+		this.cleanedContent = cleanedContent;
+		this.summary = summary;
+		this.onApply = onApply;
+	}
+
+	onOpen() {
+		const { contentEl } = this;
+		contentEl.addClass("md-cleanup-modal");
+
+		// Header with summary
+		const header = contentEl.createDiv({ cls: "md-cleanup-header" });
+		header.createEl("h2", { text: "Markdown Cleanup Preview" });
+
+		const summaryText = formatSummary(this.summary);
+		header.createEl("p", {
+			text: summaryText,
+			cls: this.summary.totalChanges > 0 ? "md-cleanup-summary" : "md-cleanup-no-changes",
+		});
+
+		// Diff container
+		const diffContainer = contentEl.createDiv({ cls: "md-cleanup-diff-container" });
+
+		if (this.summary.totalChanges === 0) {
+			diffContainer.createEl("p", {
+				text: "Your document is already clean!",
+				cls: "md-cleanup-no-changes-message",
+			});
+		} else {
+			this.renderUnifiedDiff(diffContainer);
+		}
+
+		// Buttons
+		const buttonContainer = contentEl.createDiv({ cls: "md-cleanup-buttons" });
+
+		if (this.summary.totalChanges > 0) {
+			const applyBtn = buttonContainer.createEl("button", {
+				text: "Apply Changes",
+				cls: "mod-cta",
+			});
+			applyBtn.addEventListener("click", () => {
+				this.onApply();
+				this.close();
+			});
+		}
+
+		const cancelBtn = buttonContainer.createEl("button", {
+			text: this.summary.totalChanges > 0 ? "Cancel" : "Close",
+		});
+		cancelBtn.addEventListener("click", () => this.close());
+	}
+
+	private renderUnifiedDiff(container: HTMLElement) {
+		const linePairs = this.computeLinePairs();
+		const diffEl = container.createDiv({ cls: "md-cleanup-diff" });
+
+		for (const pair of linePairs) {
+			if (pair.type === "unchanged") {
+				this.renderUnchangedLine(diffEl, pair.oldLine || "");
+			} else if (pair.type === "modified") {
+				// Show old and new lines together with character-level diff
+				this.renderModifiedPair(diffEl, pair.oldLine || "", pair.newLine || "");
+			} else if (pair.type === "removed") {
+				this.renderRemovedLine(diffEl, pair.oldLine || "");
+			} else if (pair.type === "added") {
+				this.renderAddedLine(diffEl, pair.newLine || "");
+			}
+		}
+	}
+
+	private computeLinePairs(): LinePair[] {
+		const diff = diffLines(this.originalContent, this.cleanedContent);
+		const pairs: LinePair[] = [];
+
+		let i = 0;
+		while (i < diff.length) {
+			const part = diff[i];
+
+			if (!part.added && !part.removed) {
+				// Unchanged lines
+				const lines = this.splitLines(part.value);
+				for (const line of lines) {
+					pairs.push({ type: "unchanged", oldLine: line });
+				}
+				i++;
+			} else if (part.removed) {
+				const removedLines = this.splitLines(part.value);
+				const nextPart = diff[i + 1];
+
+				if (nextPart && nextPart.added) {
+					// We have a removed block followed by added block - pair them
+					const addedLines = this.splitLines(nextPart.value);
+					const maxLen = Math.max(removedLines.length, addedLines.length);
+
+					for (let j = 0; j < maxLen; j++) {
+						const oldLine = removedLines[j];
+						const newLine = addedLines[j];
+
+						if (oldLine !== undefined && newLine !== undefined) {
+							pairs.push({ type: "modified", oldLine, newLine });
+						} else if (oldLine !== undefined) {
+							pairs.push({ type: "removed", oldLine });
+						} else if (newLine !== undefined) {
+							pairs.push({ type: "added", newLine });
+						}
+					}
+					i += 2;
+				} else {
+					// Only removed lines
+					for (const line of removedLines) {
+						pairs.push({ type: "removed", oldLine: line });
+					}
+					i++;
+				}
+			} else if (part.added) {
+				// Only added lines (no preceding removed)
+				const addedLines = this.splitLines(part.value);
+				for (const line of addedLines) {
+					pairs.push({ type: "added", newLine: line });
+				}
+				i++;
+			}
+		}
+
+		return pairs;
+	}
+
+	private splitLines(text: string): string[] {
+		const lines = text.split("\n");
+		// Remove trailing empty string from split
+		if (lines.length > 0 && lines[lines.length - 1] === "") {
+			lines.pop();
+		}
+		return lines;
+	}
+
+	private renderUnchangedLine(container: HTMLElement, line: string) {
+		const lineEl = container.createDiv({ cls: "md-cleanup-line md-cleanup-line-unchanged" });
+		lineEl.createSpan({ text: "  ", cls: "md-cleanup-prefix" });
+		lineEl.createSpan({ text: line || " " });
+	}
+
+	private renderRemovedLine(container: HTMLElement, line: string) {
+		const lineEl = container.createDiv({ cls: "md-cleanup-line md-cleanup-line-removed" });
+		lineEl.createSpan({ text: "- ", cls: "md-cleanup-prefix" });
+		this.renderLineWithWhitespace(lineEl, line, true);
+	}
+
+	private renderAddedLine(container: HTMLElement, line: string) {
+		const lineEl = container.createDiv({ cls: "md-cleanup-line md-cleanup-line-added" });
+		lineEl.createSpan({ text: "+ ", cls: "md-cleanup-prefix" });
+		this.renderLineWithWhitespace(lineEl, line, false);
+	}
+
+	private renderModifiedPair(container: HTMLElement, oldLine: string, newLine: string) {
+		// Render the removed line with character highlighting
+		const removedEl = container.createDiv({ cls: "md-cleanup-line md-cleanup-line-removed" });
+		removedEl.createSpan({ text: "- ", cls: "md-cleanup-prefix" });
+		this.renderCharDiff(removedEl, oldLine, newLine, true);
+
+		// Render the added line with character highlighting
+		const addedEl = container.createDiv({ cls: "md-cleanup-line md-cleanup-line-added" });
+		addedEl.createSpan({ text: "+ ", cls: "md-cleanup-prefix" });
+		this.renderCharDiff(addedEl, oldLine, newLine, false);
+	}
+
+	private renderCharDiff(container: HTMLElement, oldLine: string, newLine: string, showOld: boolean) {
+		const charDiff = diffChars(oldLine, newLine);
+
+		// Check if this is a whitespace-only change
+		const isWhitespaceOnly = this.isWhitespaceOnlyChange(oldLine, newLine);
+
+		for (const part of charDiff) {
+			if (showOld) {
+				// Rendering the old (removed) line
+				if (part.removed) {
+					// This text was removed - highlight it
+					if (isWhitespaceOnly && /^\s+$/.test(part.value)) {
+						this.renderVisibleWhitespace(container, part.value, "md-cleanup-char-removed");
+					} else {
+						container.createSpan({
+							text: part.value,
+							cls: "md-cleanup-char-removed",
+						});
+					}
+				} else if (!part.added) {
+					// Unchanged text
+					container.createSpan({ text: part.value });
+				}
+			} else {
+				// Rendering the new (added) line
+				if (part.added) {
+					// This text was added - highlight it
+					container.createSpan({
+						text: part.value,
+						cls: "md-cleanup-char-added",
+					});
+				} else if (!part.removed) {
+					// Unchanged text
+					container.createSpan({ text: part.value });
+				}
+			}
+		}
+
+		// Handle empty line display
+		if ((showOld && oldLine === "") || (!showOld && newLine === "")) {
+			container.createSpan({ text: "(empty line)", cls: "md-cleanup-empty-line" });
+		}
+	}
+
+	private isWhitespaceOnlyChange(oldLine: string, newLine: string): boolean {
+		return oldLine.trim() === newLine.trim();
+	}
+
+	private renderLineWithWhitespace(container: HTMLElement, line: string, highlightTrailing: boolean) {
+		if (line === "") {
+			container.createSpan({ text: "(empty line)", cls: "md-cleanup-empty-line" });
+			return;
+		}
+
+		if (highlightTrailing) {
+			// Find trailing whitespace
+			const match = line.match(/^(.*?)(\s+)$/);
+			if (match) {
+				container.createSpan({ text: match[1] });
+				this.renderVisibleWhitespace(container, match[2], "md-cleanup-char-removed");
+				return;
+			}
+		}
+
+		container.createSpan({ text: line });
+	}
+
+	private renderVisibleWhitespace(container: HTMLElement, whitespace: string, cls: string) {
+		// Convert whitespace to visible characters
+		let visible = "";
+		for (const char of whitespace) {
+			if (char === " ") {
+				visible += "·";
+			} else if (char === "\t") {
+				visible += "→   ";
+			} else {
+				visible += char;
+			}
+		}
+		container.createSpan({ text: visible, cls: cls + " md-cleanup-whitespace" });
+	}
+
+	onClose() {
+		const { contentEl } = this;
+		contentEl.empty();
+	}
+}

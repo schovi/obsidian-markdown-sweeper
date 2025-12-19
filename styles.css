@@ -1,0 +1,124 @@
+/* Modal container - target Obsidian's modal wrapper */
+.modal:has(.md-cleanup-modal) {
+	width: 95vw !important;
+	max-width: 1800px !important;
+}
+
+.modal:has(.md-cleanup-modal) .modal-content {
+	width: 100%;
+}
+
+.md-cleanup-modal {
+	width: 100%;
+}
+
+/* Header */
+.md-cleanup-header {
+	margin-bottom: 16px;
+	padding-bottom: 12px;
+	border-bottom: 1px solid var(--background-modifier-border);
+}
+
+.md-cleanup-header h2 {
+	margin: 0 0 8px 0;
+}
+
+.md-cleanup-summary {
+	color: var(--text-accent);
+	font-weight: 500;
+	margin: 0;
+}
+
+.md-cleanup-no-changes {
+	color: var(--text-muted);
+	margin: 0;
+}
+
+/* Diff container */
+.md-cleanup-diff-container {
+	max-height: 60vh;
+	overflow-y: auto;
+	margin-bottom: 16px;
+	border: 1px solid var(--background-modifier-border);
+	border-radius: 4px;
+}
+
+.md-cleanup-diff {
+	font-family: var(--font-monospace);
+	font-size: 13px;
+	line-height: 1.5;
+}
+
+/* Diff lines - unified style */
+.md-cleanup-line {
+	padding: 1px 8px;
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.md-cleanup-line-unchanged {
+	color: var(--text-muted);
+	background-color: transparent;
+}
+
+.md-cleanup-line-removed {
+	background-color: rgba(255, 99, 99, 0.2);
+	color: var(--text-normal);
+}
+
+.md-cleanup-line-added {
+	background-color: rgba(99, 255, 99, 0.2);
+	color: var(--text-normal);
+}
+
+/* Prefix (+/-) */
+.md-cleanup-prefix {
+	display: inline-block;
+	width: 20px;
+	user-select: none;
+	font-weight: bold;
+}
+
+.md-cleanup-line-removed .md-cleanup-prefix {
+	color: #f85149;
+}
+
+.md-cleanup-line-added .md-cleanup-prefix {
+	color: #3fb950;
+}
+
+/* Character-level highlighting */
+.md-cleanup-char-removed {
+	background-color: rgba(255, 99, 99, 0.5);
+	border-radius: 2px;
+}
+
+.md-cleanup-char-added {
+	background-color: rgba(99, 255, 99, 0.5);
+	border-radius: 2px;
+}
+
+/* Visible whitespace markers */
+.md-cleanup-whitespace {
+	opacity: 0.8;
+}
+
+/* Empty line indicator */
+.md-cleanup-empty-line {
+	font-style: italic;
+	opacity: 0.5;
+}
+
+/* No changes message */
+.md-cleanup-no-changes-message {
+	text-align: center;
+	padding: 32px;
+	color: var(--text-muted);
+}
+
+/* Buttons */
+.md-cleanup-buttons {
+	display: flex;
+	justify-content: flex-end;
+	gap: 8px;
+}
