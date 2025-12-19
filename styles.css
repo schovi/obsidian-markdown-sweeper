@@ -127,6 +127,17 @@
 	margin-left: 4px;
 }
 
+/* Ellipsis for partial content */
+.md-cleanup-line-ellipsis {
+	color: var(--text-muted);
+	background-color: transparent;
+}
+
+.md-cleanup-ellipsis {
+	opacity: 0.5;
+	font-weight: bold;
+}
+
 /* No changes message */
 .md-cleanup-no-changes-message {
 	text-align: center;

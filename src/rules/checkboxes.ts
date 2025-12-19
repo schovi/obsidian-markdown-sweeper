@@ -20,6 +20,7 @@ function normalizeCheckboxes(content: string): RuleResult {
 
 export const checkboxesRule: RuleDefinition = {
 	id: "checkboxes",
-	name: "checkboxes",
+	name: "Checkboxes",
+	example: "- [] task → - [ ] task",
 	fn: normalizeCheckboxes,
 };

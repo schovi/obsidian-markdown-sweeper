@@ -99,7 +99,7 @@ describe("formatSummary", () => {
 		summary.results.set("smartQuotes", 3);
 		summary.totalChanges = 8;
 		const result = formatSummary(summary);
-		expect(result).toBe("Cleaned: HTML entities, smart quotes");
+		expect(result).toBe("Cleaned: HTML entities, Smart quotes");
 	});
 
 	it("formats summary with trailing whitespace", () => {
@@ -107,7 +107,7 @@ describe("formatSummary", () => {
 		summary.results.set("trailingWhitespaceContent", 10);
 		summary.totalChanges = 10;
 		const result = formatSummary(summary);
-		expect(result).toBe("Cleaned: trailing whitespace");
+		expect(result).toBe("Cleaned: Trailing whitespace");
 	});
 
 	it("formats summary with common indentation", () => {
@@ -115,7 +115,7 @@ describe("formatSummary", () => {
 		summary.results.set("leadingIndentation", 4);
 		summary.totalChanges = 4;
 		const result = formatSummary(summary);
-		expect(result).toBe("Cleaned: common indentation");
+		expect(result).toBe("Cleaned: Common indentation");
 	});
 
 	it("formats summary with all change types", () => {
@@ -136,7 +136,7 @@ describe("formatSummary", () => {
 		summary.totalChanges = 14;
 		const result = formatSummary(summary);
 		expect(result).toBe(
-			"Cleaned: trailing whitespace, blank line whitespace, common indentation, HTML entities, HTML tags, smart quotes, link spaces, heading spaces, checkboxes, multiple spaces, blank lines in lists, extra blank lines, list markers"
+			"Cleaned: Trailing whitespace, Blank line whitespace, Common indentation, HTML entities, HTML tags, Smart quotes, Link spaces, Heading spaces, Checkboxes, Multiple spaces, Blank lines in lists, Extra blank lines, List markers"
 		);
 	});
 

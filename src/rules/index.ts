@@ -1,6 +1,7 @@
 import { rules } from "./registry";
 
 export type { RuleResult, RuleDefinition } from "./types";
+export { rules } from "./registry";
 
 export interface CleanupResult {
 	content: string;
@@ -12,11 +13,17 @@ export interface CleanupSummary {
 	totalChanges: number;
 }
 
-export function applyAllRules(content: string): CleanupResult {
+export function applyAllRules(
+	content: string,
+	enabledRules?: Record<string, boolean>
+): CleanupResult {
 	let result = content;
 	const results = new Map<string, number>();
 
 	for (const rule of rules) {
+		if (enabledRules && enabledRules[rule.id] === false) {
+			continue;
+		}
 		const ruleResult = rule.fn(result);
 		result = ruleResult.content;
 		results.set(rule.id, ruleResult.changesCount);

@@ -6,5 +6,6 @@ export interface RuleResult {
 export interface RuleDefinition {
 	id: string;
 	name: string;
+	example: string;
 	fn: (content: string) => RuleResult;
 }

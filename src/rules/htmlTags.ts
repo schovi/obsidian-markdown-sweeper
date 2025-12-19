@@ -51,5 +51,6 @@ function removeHtmlTags(content: string): RuleResult {
 export const htmlTagsRule: RuleDefinition = {
 	id: "htmlTags",
 	name: "HTML tags",
+	example: "<b>text</b> → text",
 	fn: removeHtmlTags,
 };

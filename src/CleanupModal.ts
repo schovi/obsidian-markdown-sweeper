@@ -8,24 +8,31 @@ interface LinePair {
 	newLine?: string;
 }
 
+interface CleanupModalOptions {
+	isPartial?: boolean;
+}
+
 export class CleanupModal extends Modal {
 	private originalContent: string;
 	private cleanedContent: string;
 	private summary: CleanupSummary;
 	private onApply: () => void;
+	private options: CleanupModalOptions;
 
 	constructor(
 		app: App,
 		originalContent: string,
 		cleanedContent: string,
 		summary: CleanupSummary,
-		onApply: () => void
+		onApply: () => void,
+		options: CleanupModalOptions = {}
 	) {
 		super(app);
 		this.originalContent = originalContent;
 		this.cleanedContent = cleanedContent;
 		this.summary = summary;
 		this.onApply = onApply;
+		this.options = options;
 	}
 
 	onOpen() {
@@ -78,11 +85,14 @@ export class CleanupModal extends Modal {
 		const linePairs = this.computeLinePairs();
 		const diffEl = container.createDiv({ cls: "md-cleanup-diff" });
 
+		if (this.options.isPartial) {
+			this.renderEllipsis(diffEl);
+		}
+
 		for (const pair of linePairs) {
 			if (pair.type === "unchanged") {
 				this.renderUnchangedLine(diffEl, pair.oldLine || "");
 			} else if (pair.type === "modified") {
-				// Show old and new lines together with character-level diff
 				this.renderModifiedPair(diffEl, pair.oldLine || "", pair.newLine || "");
 			} else if (pair.type === "removed") {
 				this.renderRemovedLine(diffEl, pair.oldLine || "");
@@ -90,6 +100,16 @@ export class CleanupModal extends Modal {
 				this.renderAddedLine(diffEl, pair.newLine || "");
 			}
 		}
+
+		if (this.options.isPartial) {
+			this.renderEllipsis(diffEl);
+		}
+	}
+
+	private renderEllipsis(container: HTMLElement) {
+		const lineEl = container.createDiv({ cls: "md-cleanup-line md-cleanup-line-ellipsis" });
+		lineEl.createSpan({ text: "  ", cls: "md-cleanup-prefix" });
+		lineEl.createSpan({ text: "...", cls: "md-cleanup-ellipsis" });
 	}
 
 	private computeLinePairs(): LinePair[] {

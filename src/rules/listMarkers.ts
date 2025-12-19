@@ -13,6 +13,7 @@ function normalizeListMarkers(content: string): RuleResult {
 
 export const listMarkersRule: RuleDefinition = {
 	id: "listMarkers",
-	name: "list markers",
+	name: "List markers",
+	example: "* item → - item",
 	fn: normalizeListMarkers,
 };

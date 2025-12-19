@@ -60,5 +60,6 @@ function escapeRegex(str: string): string {
 export const htmlEntitiesRule: RuleDefinition = {
 	id: "htmlEntities",
 	name: "HTML entities",
+	example: "&amp; → &",
 	fn: decodeHtmlEntities,
 };

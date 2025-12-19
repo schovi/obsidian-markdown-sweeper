@@ -24,12 +24,14 @@ function removeTrailingWhitespaceBlank(content: string): RuleResult {
 
 export const trailingWhitespaceContentRule: RuleDefinition = {
 	id: "trailingWhitespaceContent",
-	name: "trailing whitespace",
+	name: "Trailing whitespace",
+	example: "text·· → text",
 	fn: removeTrailingWhitespaceContent,
 };
 
 export const trailingWhitespaceBlankRule: RuleDefinition = {
 	id: "trailingWhitespaceBlank",
-	name: "blank line whitespace",
+	name: "Blank line whitespace",
+	example: "···(empty line) → (empty line)",
 	fn: removeTrailingWhitespaceBlank,
 };
