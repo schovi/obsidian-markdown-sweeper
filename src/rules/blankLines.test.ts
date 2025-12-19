@@ -1,15 +1,12 @@
 import { describe, it, expect } from "vitest";
-import {
-	removeBlankLinesBetweenListItems,
-	collapseMultipleBlankLines,
-} from "./blankLines";
+import { blankLinesBetweenListItemsRule, multipleBlankLinesRule } from "./blankLines";
 
-describe("removeBlankLinesBetweenListItems", () => {
+describe("blankLinesBetweenListItemsRule", () => {
 	it("removes single blank line between list items", () => {
 		const input = `- item 1
 
 - item 2`;
-		const result = removeBlankLinesBetweenListItems(input);
+		const result = blankLinesBetweenListItemsRule.fn(input);
 		expect(result.content).toBe(`- item 1
 - item 2`);
 		expect(result.changesCount).toBe(1);
@@ -20,7 +17,7 @@ describe("removeBlankLinesBetweenListItems", () => {
 
 
 - item 2`;
-		const result = removeBlankLinesBetweenListItems(input);
+		const result = blankLinesBetweenListItemsRule.fn(input);
 		expect(result.content).toBe(`- item 1
 - item 2`);
 		expect(result.changesCount).toBe(1);
@@ -32,7 +29,7 @@ describe("removeBlankLinesBetweenListItems", () => {
 - item 2
 
 - item 3`;
-		const result = removeBlankLinesBetweenListItems(input);
+		const result = blankLinesBetweenListItemsRule.fn(input);
 		expect(result.content).toBe(`- item 1
 - item 2
 - item 3`);
@@ -43,7 +40,7 @@ describe("removeBlankLinesBetweenListItems", () => {
 		const input = `* item 1
 
 * item 2`;
-		const result = removeBlankLinesBetweenListItems(input);
+		const result = blankLinesBetweenListItemsRule.fn(input);
 		expect(result.content).toBe(`* item 1
 * item 2`);
 		expect(result.changesCount).toBe(1);
@@ -53,7 +50,7 @@ describe("removeBlankLinesBetweenListItems", () => {
 		const input = `+ item 1
 
 + item 2`;
-		const result = removeBlankLinesBetweenListItems(input);
+		const result = blankLinesBetweenListItemsRule.fn(input);
 		expect(result.content).toBe(`+ item 1
 + item 2`);
 		expect(result.changesCount).toBe(1);
@@ -65,7 +62,7 @@ describe("removeBlankLinesBetweenListItems", () => {
 
   - nested 2
 - item 2`;
-		const result = removeBlankLinesBetweenListItems(input);
+		const result = blankLinesBetweenListItemsRule.fn(input);
 		expect(result.content).toBe(`- item 1
   - nested 1
   - nested 2
@@ -77,7 +74,7 @@ describe("removeBlankLinesBetweenListItems", () => {
 		const input = `- item 1
 - item 2
 - item 3`;
-		const result = removeBlankLinesBetweenListItems(input);
+		const result = blankLinesBetweenListItemsRule.fn(input);
 		expect(result.content).toBe(input);
 		expect(result.changesCount).toBe(0);
 	});
@@ -89,27 +86,27 @@ describe("removeBlankLinesBetweenListItems", () => {
 - item 2
 
 Another paragraph`;
-		const result = removeBlankLinesBetweenListItems(input);
+		const result = blankLinesBetweenListItemsRule.fn(input);
 		expect(result.content).toBe(input);
 		expect(result.changesCount).toBe(0);
 	});
 
 	it("handles blank lines with whitespace between list items", () => {
 		const input = "- item 1\n   \n- item 2";
-		const result = removeBlankLinesBetweenListItems(input);
+		const result = blankLinesBetweenListItemsRule.fn(input);
 		expect(result.content).toBe(`- item 1
 - item 2`);
 		expect(result.changesCount).toBe(1);
 	});
 });
 
-describe("collapseMultipleBlankLines", () => {
+describe("multipleBlankLinesRule", () => {
 	it("collapses two blank lines into one", () => {
 		const input = `paragraph 1
 
 
 paragraph 2`;
-		const result = collapseMultipleBlankLines(input);
+		const result = multipleBlankLinesRule.fn(input);
 		expect(result.content).toBe(`paragraph 1
 
 paragraph 2`);
@@ -123,7 +120,7 @@ paragraph 2`);
 
 
 paragraph 2`;
-		const result = collapseMultipleBlankLines(input);
+		const result = multipleBlankLinesRule.fn(input);
 		expect(result.content).toBe(`paragraph 1
 
 paragraph 2`);
@@ -139,7 +136,7 @@ paragraph 2
 
 
 paragraph 3`;
-		const result = collapseMultipleBlankLines(input);
+		const result = multipleBlankLinesRule.fn(input);
 		expect(result.content).toBe(`paragraph 1
 
 paragraph 2
@@ -154,7 +151,7 @@ paragraph 3`);
 paragraph 2
 
 paragraph 3`;
-		const result = collapseMultipleBlankLines(input);
+		const result = multipleBlankLinesRule.fn(input);
 		expect(result.content).toBe(input);
 		expect(result.changesCount).toBe(0);
 	});
@@ -163,14 +160,14 @@ paragraph 3`;
 		const input = `line 1
 line 2
 line 3`;
-		const result = collapseMultipleBlankLines(input);
+		const result = multipleBlankLinesRule.fn(input);
 		expect(result.content).toBe(input);
 		expect(result.changesCount).toBe(0);
 	});
 
 	it("collapses blank lines that contain only whitespace", () => {
 		const input = "paragraph 1\n   \n   \nparagraph 2";
-		const result = collapseMultipleBlankLines(input);
+		const result = multipleBlankLinesRule.fn(input);
 		expect(result.content).toBe(`paragraph 1
 
 paragraph 2`);
@@ -179,7 +176,7 @@ paragraph 2`);
 
 	it("collapses mixed empty and whitespace-only lines", () => {
 		const input = "paragraph 1\n\n   \n\nparagraph 2";
-		const result = collapseMultipleBlankLines(input);
+		const result = multipleBlankLinesRule.fn(input);
 		expect(result.content).toBe(`paragraph 1
 
 paragraph 2`);

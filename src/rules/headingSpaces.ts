@@ -1,17 +1,8 @@
-export interface RuleResult {
-	content: string;
-	changesCount: number;
-}
+import { RuleResult, RuleDefinition } from "./types";
 
-/**
- * Fix missing space after heading markers
- * #heading → # heading
- * ##heading → ## heading
- */
-export function fixHeadingSpaces(content: string): RuleResult {
+function fixHeadingSpaces(content: string): RuleResult {
 	let changesCount = 0;
 
-	// Match # at start of line followed by non-space, non-# character
 	const result = content.replace(
 		/^(#{1,6})([^\s#])/gm,
 		(match, hashes, firstChar) => {
@@ -22,3 +13,9 @@ export function fixHeadingSpaces(content: string): RuleResult {
 
 	return { content: result, changesCount };
 }
+
+export const headingSpacesRule: RuleDefinition = {
+	id: "headingSpaces",
+	name: "heading spaces",
+	fn: fixHeadingSpaces,
+};

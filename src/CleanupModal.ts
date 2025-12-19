@@ -101,7 +101,6 @@ export class CleanupModal extends Modal {
 			const part = diff[i];
 
 			if (!part.added && !part.removed) {
-				// Unchanged lines
 				const lines = this.splitLines(part.value);
 				for (const line of lines) {
 					pairs.push({ type: "unchanged", oldLine: line });
@@ -112,32 +111,16 @@ export class CleanupModal extends Modal {
 				const nextPart = diff[i + 1];
 
 				if (nextPart && nextPart.added) {
-					// We have a removed block followed by added block - pair them
 					const addedLines = this.splitLines(nextPart.value);
-					const maxLen = Math.max(removedLines.length, addedLines.length);
-
-					for (let j = 0; j < maxLen; j++) {
-						const oldLine = removedLines[j];
-						const newLine = addedLines[j];
-
-						if (oldLine !== undefined && newLine !== undefined) {
-							pairs.push({ type: "modified", oldLine, newLine });
-						} else if (oldLine !== undefined) {
-							pairs.push({ type: "removed", oldLine });
-						} else if (newLine !== undefined) {
-							pairs.push({ type: "added", newLine });
-						}
-					}
+					this.matchAndPairLines(removedLines, addedLines, pairs);
 					i += 2;
 				} else {
-					// Only removed lines
 					for (const line of removedLines) {
 						pairs.push({ type: "removed", oldLine: line });
 					}
 					i++;
 				}
 			} else if (part.added) {
-				// Only added lines (no preceding removed)
 				const addedLines = this.splitLines(part.value);
 				for (const line of addedLines) {
 					pairs.push({ type: "added", newLine: line });
@@ -147,6 +130,81 @@ export class CleanupModal extends Modal {
 		}
 
 		return pairs;
+	}
+
+	private matchAndPairLines(
+		removedLines: string[],
+		addedLines: string[],
+		pairs: LinePair[]
+	): void {
+		const addedUsed = new Set<number>();
+
+		for (const oldLine of removedLines) {
+			const oldTrimmed = oldLine.trim();
+
+			// Find best match: exact content match (whitespace-only change)
+			let matchIdx = -1;
+			for (let j = 0; j < addedLines.length; j++) {
+				if (addedUsed.has(j)) continue;
+				if (addedLines[j].trim() === oldTrimmed) {
+					matchIdx = j;
+					break;
+				}
+			}
+
+			if (matchIdx !== -1) {
+				const newLine = addedLines[matchIdx];
+				addedUsed.add(matchIdx);
+
+				if (oldLine === newLine) {
+					pairs.push({ type: "unchanged", oldLine });
+				} else {
+					pairs.push({ type: "modified", oldLine, newLine });
+				}
+			} else if (oldTrimmed === "") {
+				pairs.push({ type: "removed", oldLine });
+			} else {
+				// Try fuzzy match - find most similar unused line
+				let bestIdx = -1;
+				let bestScore = 0;
+				for (let j = 0; j < addedLines.length; j++) {
+					if (addedUsed.has(j)) continue;
+					const score = this.similarity(oldTrimmed, addedLines[j].trim());
+					if (score > bestScore && score > 0.5) {
+						bestScore = score;
+						bestIdx = j;
+					}
+				}
+
+				if (bestIdx !== -1) {
+					addedUsed.add(bestIdx);
+					pairs.push({ type: "modified", oldLine, newLine: addedLines[bestIdx] });
+				} else {
+					pairs.push({ type: "removed", oldLine });
+				}
+			}
+		}
+
+		// Add any unmatched added lines
+		for (let j = 0; j < addedLines.length; j++) {
+			if (!addedUsed.has(j)) {
+				pairs.push({ type: "added", newLine: addedLines[j] });
+			}
+		}
+	}
+
+	private similarity(a: string, b: string): number {
+		if (a === b) return 1;
+		if (a.length === 0 || b.length === 0) return 0;
+
+		// Simple similarity: ratio of common characters
+		const setA = new Set(a);
+		const setB = new Set(b);
+		let common = 0;
+		for (const c of setA) {
+			if (setB.has(c)) common++;
+		}
+		return (2 * common) / (setA.size + setB.size);
 	}
 
 	private splitLines(text: string): string[] {
@@ -221,7 +279,7 @@ export class CleanupModal extends Modal {
 			// Blank line that had only whitespace
 			this.renderVisibleWhitespace(lineEl, oldLine, "md-cleanup-ws-removed");
 			lineEl.createSpan({
-				text: ` ← blank lines (${this.summary.trailingWhitespaceBlank})`,
+				text: ` ← blank lines (${this.summary.results.get("trailingWhitespaceBlank") || 0})`,
 				cls: "md-cleanup-blank-label"
 			});
 		} else {

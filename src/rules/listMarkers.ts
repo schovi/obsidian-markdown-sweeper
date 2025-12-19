@@ -1,16 +1,8 @@
-export interface RuleResult {
-	content: string;
-	changesCount: number;
-}
+import { RuleResult, RuleDefinition } from "./types";
 
-/**
- * Normalize list markers: convert * and + to -
- * Preserves indentation and spacing
- */
-export function normalizeListMarkers(content: string): RuleResult {
+function normalizeListMarkers(content: string): RuleResult {
 	let changesCount = 0;
 
-	// Match line start, optional whitespace, then * or + followed by space
 	const result = content.replace(/^(\s*)[*+](\s+)/gm, (match, indent, space) => {
 		changesCount++;
 		return `${indent}-${space}`;
@@ -18,3 +10,9 @@ export function normalizeListMarkers(content: string): RuleResult {
 
 	return { content: result, changesCount };
 }
+
+export const listMarkersRule: RuleDefinition = {
+	id: "listMarkers",
+	name: "list markers",
+	fn: normalizeListMarkers,
+};

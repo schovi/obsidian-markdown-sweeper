@@ -1,16 +1,8 @@
-export interface RuleResult {
-	content: string;
-	changesCount: number;
-}
+import { RuleResult, RuleDefinition } from "./types";
 
-/**
- * Fix spaces in markdown links
- * [text] (url) → [text](url)
- */
-export function fixLinkSpaces(content: string): RuleResult {
+function fixLinkSpaces(content: string): RuleResult {
 	let changesCount = 0;
 
-	// Match [text] (url) with space before parenthesis
 	const result = content.replace(
 		/\[([^\]]+)\]\s+\(([^)]+)\)/g,
 		(match, text, url) => {
@@ -21,3 +13,9 @@ export function fixLinkSpaces(content: string): RuleResult {
 
 	return { content: result, changesCount };
 }
+
+export const linkSpacesRule: RuleDefinition = {
+	id: "linkSpaces",
+	name: "link spaces",
+	fn: fixLinkSpaces,
+};

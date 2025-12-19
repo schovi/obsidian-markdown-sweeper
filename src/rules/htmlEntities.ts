@@ -1,13 +1,6 @@
-export interface RuleResult {
-	content: string;
-	changesCount: number;
-}
+import { RuleResult, RuleDefinition } from "./types";
 
-/**
- * Decode common HTML entities to their characters
- * Skips content inside code blocks (``` and inline `)
- */
-export function decodeHtmlEntities(content: string): RuleResult {
+function decodeHtmlEntities(content: string): RuleResult {
 	let changesCount = 0;
 
 	const entities: Record<string, string> = {
@@ -20,7 +13,6 @@ export function decodeHtmlEntities(content: string): RuleResult {
 		"&apos;": "'",
 	};
 
-	// Process content while preserving code blocks
 	const result = processOutsideCode(content, (text) => {
 		let processed = text;
 		for (const [entity, char] of Object.entries(entities)) {
@@ -36,32 +28,24 @@ export function decodeHtmlEntities(content: string): RuleResult {
 	return { content: result, changesCount };
 }
 
-/**
- * Process text outside of code blocks
- */
 function processOutsideCode(
 	content: string,
 	processor: (text: string) => string
 ): string {
 	const parts: string[] = [];
-	let remaining = content;
 
-	// Match fenced code blocks and inline code
 	const codePattern = /(```[\s\S]*?```|`[^`\n]+`)/g;
 	let lastIndex = 0;
 	let match;
 
 	while ((match = codePattern.exec(content)) !== null) {
-		// Process text before the code block
 		if (match.index > lastIndex) {
 			parts.push(processor(content.slice(lastIndex, match.index)));
 		}
-		// Keep code block unchanged
 		parts.push(match[0]);
 		lastIndex = match.index + match[0].length;
 	}
 
-	// Process remaining text after last code block
 	if (lastIndex < content.length) {
 		parts.push(processor(content.slice(lastIndex)));
 	}
@@ -72,3 +56,9 @@ function processOutsideCode(
 function escapeRegex(str: string): string {
 	return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
+
+export const htmlEntitiesRule: RuleDefinition = {
+	id: "htmlEntities",
+	name: "HTML entities",
+	fn: decodeHtmlEntities,
+};

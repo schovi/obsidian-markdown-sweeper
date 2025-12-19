@@ -1,25 +1,35 @@
-export interface TrailingWhitespaceResult {
-	content: string;
-	contentLinesCount: number;
-	blankLinesCount: number;
-}
+import { RuleResult, RuleDefinition } from "./types";
 
-/**
- * Remove trailing whitespace from all lines
- * Tracks content lines vs blank lines separately
- */
-export function removeTrailingWhitespace(content: string): TrailingWhitespaceResult {
-	let contentLinesCount = 0;
-	let blankLinesCount = 0;
+function removeTrailingWhitespaceContent(content: string): RuleResult {
+	let changesCount = 0;
 
-	const result = content.replace(/^(.*?)([ \t]+)$/gm, (match, content, whitespace) => {
-		if (content === "") {
-			blankLinesCount++;
-		} else {
-			contentLinesCount++;
-		}
-		return content;
+	const result = content.replace(/^(.*\S)([ \t]+)$/gm, (match, lineContent) => {
+		changesCount++;
+		return lineContent;
 	});
 
-	return { content: result, contentLinesCount, blankLinesCount };
+	return { content: result, changesCount };
 }
+
+function removeTrailingWhitespaceBlank(content: string): RuleResult {
+	let changesCount = 0;
+
+	const result = content.replace(/^([ \t]+)$/gm, () => {
+		changesCount++;
+		return "";
+	});
+
+	return { content: result, changesCount };
+}
+
+export const trailingWhitespaceContentRule: RuleDefinition = {
+	id: "trailingWhitespaceContent",
+	name: "trailing whitespace",
+	fn: removeTrailingWhitespaceContent,
+};
+
+export const trailingWhitespaceBlankRule: RuleDefinition = {
+	id: "trailingWhitespaceBlank",
+	name: "blank line whitespace",
+	fn: removeTrailingWhitespaceBlank,
+};

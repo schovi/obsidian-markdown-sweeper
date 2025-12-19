@@ -1,12 +1,12 @@
 import { describe, it, expect } from "vitest";
-import { removeCommonLeadingIndentation } from "./leadingIndentation";
+import { leadingIndentationRule } from "./leadingIndentation";
 
-describe("removeCommonLeadingIndentation", () => {
+describe("leadingIndentationRule", () => {
 	it("removes common 2-space indentation", () => {
 		const input = `  line 1
   line 2
   line 3`;
-		const result = removeCommonLeadingIndentation(input);
+		const result = leadingIndentationRule.fn(input);
 		expect(result.content).toBe(`line 1
 line 2
 line 3`);
@@ -16,7 +16,7 @@ line 3`);
 	it("removes common 4-space indentation", () => {
 		const input = `    line 1
     line 2`;
-		const result = removeCommonLeadingIndentation(input);
+		const result = leadingIndentationRule.fn(input);
 		expect(result.content).toBe(`line 1
 line 2`);
 		expect(result.changesCount).toBe(4);
@@ -26,7 +26,7 @@ line 2`);
 		const input = `  parent
     child
   sibling`;
-		const result = removeCommonLeadingIndentation(input);
+		const result = leadingIndentationRule.fn(input);
 		expect(result.content).toBe(`parent
   child
 sibling`);
@@ -37,7 +37,7 @@ sibling`);
 		const input = `  line 1
 
   line 2`;
-		const result = removeCommonLeadingIndentation(input);
+		const result = leadingIndentationRule.fn(input);
 		expect(result.content).toBe(`line 1
 
 line 2`);
@@ -48,7 +48,7 @@ line 2`);
 		const input = `  line 1
 
   line 2`;
-		const result = removeCommonLeadingIndentation(input);
+		const result = leadingIndentationRule.fn(input);
 		expect(result.content).toBe(`line 1
 
 line 2`);
@@ -59,7 +59,7 @@ line 2`);
 		const input = `line 1
   line 2
 line 3`;
-		const result = removeCommonLeadingIndentation(input);
+		const result = leadingIndentationRule.fn(input);
 		expect(result.content).toBe(input);
 		expect(result.changesCount).toBe(0);
 	});
@@ -67,7 +67,7 @@ line 3`;
 	it("handles tab indentation", () => {
 		const input = `\tline 1
 \tline 2`;
-		const result = removeCommonLeadingIndentation(input);
+		const result = leadingIndentationRule.fn(input);
 		expect(result.content).toBe(`line 1
 line 2`);
 		expect(result.changesCount).toBe(1);
@@ -76,7 +76,7 @@ line 2`);
 	it("returns unchanged for no indentation", () => {
 		const input = `line 1
 line 2`;
-		const result = removeCommonLeadingIndentation(input);
+		const result = leadingIndentationRule.fn(input);
 		expect(result.content).toBe(input);
 		expect(result.changesCount).toBe(0);
 	});
