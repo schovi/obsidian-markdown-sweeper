@@ -14,6 +14,7 @@ function convertLeadingTabsToSpaces(content: string): RuleResult {
 export const tabsToSpacesRule: RuleDefinition = {
 	id: "tabsToSpaces",
 	name: "Tabs to spaces",
+	group: "whitespace",
 	example: "→item → ··item",
 	fn: convertLeadingTabsToSpaces,
 };

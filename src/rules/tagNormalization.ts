@@ -1,28 +1,22 @@
 import { RuleResult, RuleDefinition } from "./types";
 
-function decodeHtmlEntities(content: string): RuleResult {
+function normalizeTags(content: string): RuleResult {
 	let changesCount = 0;
 
-	const entities: Record<string, string> = {
-		"&nbsp;": " ",
-		"&amp;": "&",
-		"&lt;": "<",
-		"&gt;": ">",
-		"&quot;": '"',
-		"&#39;": "'",
-		"&apos;": "'",
-	};
-
+	// Match Obsidian tags: #tag or #parent/child
+	// Don't match inside code blocks or inline code
 	const result = processOutsideCode(content, (text) => {
-		let processed = text;
-		for (const [entity, char] of Object.entries(entities)) {
-			const regex = new RegExp(escapeRegex(entity), "gi");
-			processed = processed.replace(regex, () => {
-				changesCount++;
-				return char;
-			});
-		}
-		return processed;
+		return text.replace(
+			/(^|[\s,;:!?([{])#([a-zA-Z][a-zA-Z0-9_/-]*)/g,
+			(match, prefix, tag) => {
+				const lowercased = tag.toLowerCase();
+				if (tag !== lowercased) {
+					changesCount++;
+					return `${prefix}#${lowercased}`;
+				}
+				return match;
+			}
+		);
 	});
 
 	return { content: result, changesCount };
@@ -34,6 +28,7 @@ function processOutsideCode(
 ): string {
 	const parts: string[] = [];
 
+	// Match code blocks and inline code
 	const codePattern = /(```[\s\S]*?```|`[^`\n]+`)/g;
 	let lastIndex = 0;
 	let match;
@@ -53,14 +48,10 @@ function processOutsideCode(
 	return parts.join("");
 }
 
-function escapeRegex(str: string): string {
-	return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-}
-
-export const htmlEntitiesRule: RuleDefinition = {
-	id: "htmlEntities",
-	name: "HTML entities",
-	group: "code",
-	example: "&amp; → &",
-	fn: decodeHtmlEntities,
+export const tagNormalizationRule: RuleDefinition = {
+	id: "tagNormalization",
+	name: "Tag case",
+	group: "obsidian",
+	example: "#Tag → #tag",
+	fn: normalizeTags,
 };

@@ -13,22 +13,53 @@ import { blankLinesBetweenListItemsRule, multipleBlankLinesRule } from "./blankL
 import { listMarkersRule } from "./listMarkers";
 import { fixIndentationRule } from "./fixIndentation";
 import { emptyListItemsRule } from "./emptyListItems";
+import { eofNewlineRule } from "./eofNewline";
+import { horizontalRulesRule } from "./horizontalRules";
+import { orderedListsRule } from "./orderedLists";
+import { blockQuotesRule } from "./blockQuotes";
+import { tagNormalizationRule } from "./tagNormalization";
+import { codeFencesRule } from "./codeFences";
+import { emphasisRule } from "./emphasis";
+import { headingLevelsRule } from "./headingLevels";
 
 export const rules: RuleDefinition[] = [
-	tabsToSpacesRule,
-	trailingWhitespaceContentRule,
+	// Blank lines
+	multipleBlankLinesRule,
+	blankLinesBetweenListItemsRule,
 	trailingWhitespaceBlankRule,
+	eofNewlineRule,
+
+	// Whitespace
+	trailingWhitespaceContentRule,
+	multipleSpacesRule,
+	tabsToSpacesRule,
 	leadingIndentationRule,
-	htmlEntitiesRule,
-	htmlTagsRule,
+
+	// Lists
+	listMarkersRule,
+	checkboxesRule,
+	emptyListItemsRule,
+	fixIndentationRule,
+	orderedListsRule,
+
+	// Formatting
 	smartQuotesRule,
 	linkSpacesRule,
+	emphasisRule,
+	horizontalRulesRule,
+
+	// Headings
 	headingSpacesRule,
-	checkboxesRule,
-	multipleSpacesRule,
-	blankLinesBetweenListItemsRule,
-	multipleBlankLinesRule,
-	listMarkersRule,
-	fixIndentationRule,
-	emptyListItemsRule,
+	headingLevelsRule,
+
+	// Code
+	htmlEntitiesRule,
+	htmlTagsRule,
+	codeFencesRule,
+
+	// Block elements
+	blockQuotesRule,
+
+	// Obsidian-specific
+	tagNormalizationRule,
 ];

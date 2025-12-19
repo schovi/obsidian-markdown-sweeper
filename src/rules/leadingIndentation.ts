@@ -29,6 +29,7 @@ function removeCommonLeadingIndentation(content: string): RuleResult {
 export const leadingIndentationRule: RuleDefinition = {
 	id: "leadingIndentation",
 	name: "Common indentation",
+	group: "whitespace",
 	example: "····all lines indented → removed",
 	fn: removeCommonLeadingIndentation,
 };

@@ -21,6 +21,7 @@ function normalizeSmartQuotes(content: string): RuleResult {
 export const smartQuotesRule: RuleDefinition = {
 	id: "smartQuotes",
 	name: "Smart quotes",
+	group: "formatting",
 	example: '"curly" → "straight"',
 	fn: normalizeSmartQuotes,
 };

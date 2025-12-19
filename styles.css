@@ -151,3 +151,34 @@
 	justify-content: flex-end;
 	gap: 8px;
 }
+
+/* Settings - Rule Groups */
+.md-cleanup-group {
+	margin-bottom: 16px;
+}
+
+.md-cleanup-group-header {
+	display: flex;
+	align-items: center;
+	padding: 8px 0;
+	cursor: pointer;
+	font-weight: 600;
+	font-size: 14px;
+	color: var(--text-normal);
+	border-bottom: 1px solid var(--background-modifier-border);
+	user-select: none;
+}
+
+.md-cleanup-group-header:hover {
+	color: var(--text-accent);
+}
+
+.md-cleanup-group-arrow {
+	font-size: 10px;
+	margin-right: 6px;
+	opacity: 0.6;
+}
+
+.md-cleanup-group-rules {
+	padding-left: 8px;
+}

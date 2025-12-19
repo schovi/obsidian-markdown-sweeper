@@ -14,6 +14,7 @@ function normalizeListMarkers(content: string): RuleResult {
 export const listMarkersRule: RuleDefinition = {
 	id: "listMarkers",
 	name: "List markers",
+	group: "lists",
 	example: "* item → - item",
 	fn: normalizeListMarkers,
 };

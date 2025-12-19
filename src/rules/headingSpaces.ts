@@ -17,6 +17,7 @@ function fixHeadingSpaces(content: string): RuleResult {
 export const headingSpacesRule: RuleDefinition = {
 	id: "headingSpaces",
 	name: "Heading spaces",
+	group: "headings",
 	example: "##Title → ## Title",
 	fn: fixHeadingSpaces,
 };

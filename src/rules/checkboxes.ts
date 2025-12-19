@@ -21,6 +21,7 @@ function normalizeCheckboxes(content: string): RuleResult {
 export const checkboxesRule: RuleDefinition = {
 	id: "checkboxes",
 	name: "Checkboxes",
+	group: "lists",
 	example: "- [] task → - [ ] task",
 	fn: normalizeCheckboxes,
 };

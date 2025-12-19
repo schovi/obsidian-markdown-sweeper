@@ -25,6 +25,7 @@ function collapseMultipleSpaces(content: string): RuleResult {
 export const multipleSpacesRule: RuleDefinition = {
 	id: "multipleSpaces",
 	name: "Multiple spaces",
+	group: "whitespace",
 	example: "too····many → too many",
 	fn: collapseMultipleSpaces,
 };

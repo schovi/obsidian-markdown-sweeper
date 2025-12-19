@@ -47,6 +47,7 @@ function fixExcessiveIndentation(content: string): RuleResult {
 export const fixIndentationRule: RuleDefinition = {
 	id: "fixIndentation",
 	name: "Broken indentation",
+	group: "lists",
 	example: "········- item → ··- item",
 	fn: fixExcessiveIndentation,
 };

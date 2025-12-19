@@ -28,6 +28,7 @@ function collapseMultipleBlankLines(content: string): RuleResult {
 export const blankLinesBetweenListItemsRule: RuleDefinition = {
 	id: "blankLinesBetweenListItems",
 	name: "Blank lines in lists",
+	group: "blankLines",
 	example: "- item1\\n\\n- item2 → - item1\\n- item2",
 	fn: removeBlankLinesBetweenListItems,
 };
@@ -35,6 +36,7 @@ export const blankLinesBetweenListItemsRule: RuleDefinition = {
 export const multipleBlankLinesRule: RuleDefinition = {
 	id: "multipleBlankLines",
 	name: "Extra blank lines",
+	group: "blankLines",
 	example: "3+ blank lines → 1 blank line",
 	fn: collapseMultipleBlankLines,
 };

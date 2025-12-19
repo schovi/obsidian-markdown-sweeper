@@ -17,6 +17,7 @@ function fixLinkSpaces(content: string): RuleResult {
 export const linkSpacesRule: RuleDefinition = {
 	id: "linkSpaces",
 	name: "Link spaces",
+	group: "formatting",
 	example: "[text] (url) → [text](url)",
 	fn: fixLinkSpaces,
 };

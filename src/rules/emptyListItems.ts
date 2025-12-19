@@ -44,6 +44,7 @@ function removeEmptyListItems(content: string): RuleResult {
 export const emptyListItemsRule: RuleDefinition = {
 	id: "emptyListItems",
 	name: "Empty list items",
+	group: "lists",
 	example: "- (empty) → removed",
 	fn: removeEmptyListItems,
 };

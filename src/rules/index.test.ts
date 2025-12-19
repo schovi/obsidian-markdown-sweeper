@@ -13,7 +13,8 @@ Some paragraph`;
 		expect(result.content).toBe(`- item 1
 - item 2
 
-Some paragraph`);
+Some paragraph
+`);
 		expect(result.summary.results.get("blankLinesBetweenListItems")).toBe(1);
 		expect(result.summary.results.get("multipleBlankLines")).toBe(1);
 		expect(result.summary.results.get("listMarkers")).toBe(2);
@@ -23,7 +24,8 @@ Some paragraph`);
 		const input = `- item 1
 - item 2
 
-Some paragraph`;
+Some paragraph
+`;
 		const result = applyAllRules(input);
 		expect(result.content).toBe(input);
 		expect(result.summary.totalChanges).toBe(0);
@@ -38,49 +40,49 @@ Some paragraph`;
 	it("decodes HTML entities", () => {
 		const input = "hello&nbsp;world &amp; more";
 		const result = applyAllRules(input);
-		expect(result.content).toBe("hello world & more");
+		expect(result.content).toBe("hello world & more\n");
 		expect(result.summary.results.get("htmlEntities")).toBe(2);
 	});
 
-	it("removes HTML tags", () => {
-		const input = "<p>paragraph</p><br>next";
+	it("converts HTML tags to markdown", () => {
+		const input = "<b>bold</b> and <i>italic</i>";
 		const result = applyAllRules(input);
-		expect(result.content).toBe("paragraph\nnext");
-		expect(result.summary.results.get("htmlTags")).toBe(3);
+		expect(result.content).toBe("**bold** and *italic*\n");
+		expect(result.summary.results.get("htmlTags")).toBe(2);
 	});
 
 	it("normalizes smart quotes", () => {
 		const input = "\u201chello\u201d"; // "hello"
 		const result = applyAllRules(input);
-		expect(result.content).toBe('"hello"');
+		expect(result.content).toBe('"hello"\n');
 		expect(result.summary.results.get("smartQuotes")).toBe(2);
 	});
 
 	it("fixes link spaces", () => {
 		const input = "[link] (url)";
 		const result = applyAllRules(input);
-		expect(result.content).toBe("[link](url)");
+		expect(result.content).toBe("[link](url)\n");
 		expect(result.summary.results.get("linkSpaces")).toBe(1);
 	});
 
 	it("fixes heading spaces", () => {
 		const input = "#heading";
 		const result = applyAllRules(input);
-		expect(result.content).toBe("# heading");
+		expect(result.content).toBe("# heading\n");
 		expect(result.summary.results.get("headingSpaces")).toBe(1);
 	});
 
 	it("normalizes checkboxes", () => {
 		const input = "- [] task\n- [X] done";
 		const result = applyAllRules(input);
-		expect(result.content).toBe("- [ ] task\n- [x] done");
+		expect(result.content).toBe("- [ ] task\n- [x] done\n");
 		expect(result.summary.results.get("checkboxes")).toBe(2);
 	});
 
 	it("collapses multiple spaces", () => {
 		const input = "word  word";
 		const result = applyAllRules(input);
-		expect(result.content).toBe("word word");
+		expect(result.content).toBe("word word\n");
 		expect(result.summary.results.get("multipleSpaces")).toBe(1);
 	});
 });
@@ -99,7 +101,8 @@ describe("formatSummary", () => {
 		summary.results.set("smartQuotes", 3);
 		summary.totalChanges = 8;
 		const result = formatSummary(summary);
-		expect(result).toBe("Cleaned: HTML entities, Smart quotes");
+		// Order follows registry order: smartQuotes before htmlEntities
+		expect(result).toBe("Cleaned: Smart quotes, HTML entities");
 	});
 
 	it("formats summary with trailing whitespace", () => {
@@ -135,8 +138,9 @@ describe("formatSummary", () => {
 		summary.results.set("listMarkers", 1);
 		summary.totalChanges = 14;
 		const result = formatSummary(summary);
+		// Order follows registry order (by group)
 		expect(result).toBe(
-			"Cleaned: Trailing whitespace, Blank line whitespace, Common indentation, HTML entities, HTML tags, Smart quotes, Link spaces, Heading spaces, Checkboxes, Multiple spaces, Blank lines in lists, Extra blank lines, List markers"
+			"Cleaned: Extra blank lines, Blank lines in lists, Blank line whitespace, Trailing whitespace, Multiple spaces, Common indentation, List markers, Checkboxes, Smart quotes, Link spaces, Heading spaces, HTML entities, HTML to Markdown"
 		);
 	});
 
