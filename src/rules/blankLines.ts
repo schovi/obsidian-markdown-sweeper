@@ -2,9 +2,20 @@ import { RuleResult, RuleDefinition } from "./types";
 
 function removeBlankLinesBetweenListItems(content: string): RuleResult {
 	let changesCount = 0;
+	let result = content;
 
-	const result = content.replace(
+	// Remove blank lines between unordered list items
+	result = result.replace(
 		/^(\s*[-*+]\s+.*)(\n\s*\n)+(?=\s*[-*+]\s+)/gm,
+		(match, listItem) => {
+			changesCount++;
+			return listItem + "\n";
+		}
+	);
+
+	// Remove blank lines between ordered list items
+	result = result.replace(
+		/^(\s*\d+\.\s+.*)(\n\s*\n)+(?=\s*\d+\.\s+)/gm,
 		(match, listItem) => {
 			changesCount++;
 			return listItem + "\n";

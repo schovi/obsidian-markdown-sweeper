@@ -34,13 +34,9 @@ export function applyAllRules(
 }
 
 export function formatSummary(summary: CleanupSummary): string {
-	const parts = rules
-		.filter((r) => (summary.results.get(r.id) || 0) > 0)
-		.map((r) => r.name);
-
-	if (parts.length === 0) {
+	if (summary.totalChanges === 0) {
 		return "No changes needed";
 	}
 
-	return `Cleaned: ${parts.join(", ")}`;
+	return `${summary.totalChanges} change${summary.totalChanges === 1 ? "" : "s"}`;
 }

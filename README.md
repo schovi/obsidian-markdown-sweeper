@@ -84,7 +84,7 @@ You can also switch to **Custom** mode and toggle individual rules.
 | Extra blank lines | Minimal | `3+ blank lines` → `1 blank line` |
 | Blank line whitespace | Minimal | `···` (empty line) → `` (empty line) |
 | EOF newline | Minimal | `text\n\n\n` → `text\n` |
-| Blank lines in lists | Aggressive | `- a\n\n- b` → `- a\n- b` |
+| Blank lines in lists | Aggressive | `- a\n\n- b` or `1.\n\n2.` → collapsed |
 
 ### Whitespace
 

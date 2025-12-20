@@ -97,51 +97,16 @@ function createEmptySummary(): CleanupSummary {
 describe("formatSummary", () => {
 	it("formats summary with multiple changes", () => {
 		const summary = createEmptySummary();
-		summary.results.set("htmlEntities", 5);
-		summary.results.set("smartQuotes", 3);
 		summary.totalChanges = 8;
 		const result = formatSummary(summary);
-		// Order follows registry order: smartQuotes before htmlEntities
-		expect(result).toBe("Cleaned: Smart quotes, HTML entities");
+		expect(result).toBe("8 changes");
 	});
 
-	it("formats summary with trailing whitespace", () => {
+	it("formats summary with single change", () => {
 		const summary = createEmptySummary();
-		summary.results.set("trailingWhitespaceContent", 10);
-		summary.totalChanges = 10;
+		summary.totalChanges = 1;
 		const result = formatSummary(summary);
-		expect(result).toBe("Cleaned: Trailing whitespace");
-	});
-
-	it("formats summary with common indentation", () => {
-		const summary = createEmptySummary();
-		summary.results.set("leadingIndentation", 4);
-		summary.totalChanges = 4;
-		const result = formatSummary(summary);
-		expect(result).toBe("Cleaned: Common indentation");
-	});
-
-	it("formats summary with all change types", () => {
-		const summary = createEmptySummary();
-		summary.results.set("trailingWhitespaceContent", 1);
-		summary.results.set("trailingWhitespaceBlank", 1);
-		summary.results.set("leadingIndentation", 2);
-		summary.results.set("htmlEntities", 1);
-		summary.results.set("htmlTags", 1);
-		summary.results.set("smartQuotes", 1);
-		summary.results.set("linkSpaces", 1);
-		summary.results.set("headingSpaces", 1);
-		summary.results.set("checkboxes", 1);
-		summary.results.set("multipleSpaces", 1);
-		summary.results.set("blankLinesBetweenListItems", 1);
-		summary.results.set("multipleBlankLines", 1);
-		summary.results.set("listMarkers", 1);
-		summary.totalChanges = 14;
-		const result = formatSummary(summary);
-		// Order follows registry order (by group)
-		expect(result).toBe(
-			"Cleaned: Extra blank lines, Blank lines in lists, Blank line whitespace, Trailing whitespace, Multiple spaces, Common indentation, List markers, Checkboxes, Smart quotes, Link spaces, Heading spaces, HTML to Markdown, HTML entities"
-		);
+		expect(result).toBe("1 change");
 	});
 
 	it("returns 'No changes needed' when no changes", () => {

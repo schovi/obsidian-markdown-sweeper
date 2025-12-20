@@ -98,6 +98,43 @@ Another paragraph`;
 - item 2`);
 		expect(result.changesCount).toBe(1);
 	});
+
+	it("removes blank lines between ordered list items", () => {
+		const input = `1. item 1
+
+2. item 2
+
+3. item 3`;
+		const result = blankLinesBetweenListItemsRule.fn(input);
+		expect(result.content).toBe(`1. item 1
+2. item 2
+3. item 3`);
+		expect(result.changesCount).toBe(2);
+	});
+
+	it("handles ordered lists with same numbers", () => {
+		const input = `1. item 1
+
+1. item 2
+
+1. item 3`;
+		const result = blankLinesBetweenListItemsRule.fn(input);
+		expect(result.content).toBe(`1. item 1
+1. item 2
+1. item 3`);
+		expect(result.changesCount).toBe(2);
+	});
+
+	it("preserves blank lines between different list types", () => {
+		const input = `1. ordered
+
+- unordered
+
+2. ordered again`;
+		const result = blankLinesBetweenListItemsRule.fn(input);
+		expect(result.content).toBe(input);
+		expect(result.changesCount).toBe(0);
+	});
 });
 
 describe("multipleBlankLinesRule", () => {
