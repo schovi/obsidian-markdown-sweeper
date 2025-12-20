@@ -4,11 +4,13 @@ import { rules } from "./rules/registry";
 import { RuleGroup, ruleGroups, ruleGroupNames, RuleDefinition, PresetTier } from "./rules/types";
 import { getPresetRules, presetNames } from "./presets";
 
+export type CleanMode = "off" | "quick" | "preview";
+
 export interface SweeperSettings {
 	enabledRules: Record<string, boolean>;
 	collapsedGroups: Record<string, boolean>;
-	cleanOnSave: boolean;
-	cleanOnPaste: boolean;
+	cleanOnSaveMode: CleanMode;
+	cleanOnPasteMode: CleanMode;
 	activePreset: PresetTier | "custom";
 }
 
@@ -16,10 +18,21 @@ export function getDefaultSettings(): SweeperSettings {
 	return {
 		enabledRules: getPresetRules("standard"),
 		collapsedGroups: {},
-		cleanOnSave: false,
-		cleanOnPaste: false,
+		cleanOnSaveMode: "off",
+		cleanOnPasteMode: "off",
 		activePreset: "standard",
 	};
+}
+
+export function migrateSettings(data: Record<string, unknown>): void {
+	if (typeof data.cleanOnSave === "boolean") {
+		data.cleanOnSaveMode = data.cleanOnSave ? "quick" : "off";
+		delete data.cleanOnSave;
+	}
+	if (typeof data.cleanOnPaste === "boolean") {
+		data.cleanOnPasteMode = data.cleanOnPaste ? "preview" : "off";
+		delete data.cleanOnPaste;
+	}
 }
 
 export class SweeperSettingsTab extends PluginSettingTab {
@@ -39,23 +52,29 @@ export class SweeperSettingsTab extends PluginSettingTab {
 		new Setting(containerEl)
 			.setName("Clean on save")
 			.setDesc("Automatically clean markdown when saving a file")
-			.addToggle((toggle) =>
-				toggle
-					.setValue(this.plugin.settings.cleanOnSave)
+			.addDropdown((dropdown) =>
+				dropdown
+					.addOption("off", "Off")
+					.addOption("quick", "Quick")
+					.addOption("preview", "Preview")
+					.setValue(this.plugin.settings.cleanOnSaveMode)
 					.onChange(async (value) => {
-						this.plugin.settings.cleanOnSave = value;
+						this.plugin.settings.cleanOnSaveMode = value as CleanMode;
 						await this.plugin.saveSettings();
 					})
 			);
 
 		new Setting(containerEl)
 			.setName("Clean on paste")
-			.setDesc("Show preview when pasting plain text from clipboard")
-			.addToggle((toggle) =>
-				toggle
-					.setValue(this.plugin.settings.cleanOnPaste)
+			.setDesc("Clean pasted plain text from clipboard")
+			.addDropdown((dropdown) =>
+				dropdown
+					.addOption("off", "Off")
+					.addOption("quick", "Quick")
+					.addOption("preview", "Preview")
+					.setValue(this.plugin.settings.cleanOnPasteMode)
 					.onChange(async (value) => {
-						this.plugin.settings.cleanOnPaste = value;
+						this.plugin.settings.cleanOnPasteMode = value as CleanMode;
 						await this.plugin.saveSettings();
 					})
 			);

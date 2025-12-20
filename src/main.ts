@@ -5,6 +5,7 @@ import {
 	SweeperSettings,
 	SweeperSettingsTab,
 	getDefaultSettings,
+	migrateSettings,
 } from "./settings";
 
 export default class SweeperPlugin extends Plugin {
@@ -46,7 +47,7 @@ export default class SweeperPlugin extends Plugin {
 
 		this.registerEvent(
 			this.app.vault.on("modify", (file) => {
-				if (this.settings.cleanOnSave && file instanceof TFile && file.extension === "md") {
+				if (this.settings.cleanOnSaveMode !== "off" && file instanceof TFile && file.extension === "md") {
 					this.cleanFileOnSave(file);
 				}
 			})
@@ -58,7 +59,9 @@ export default class SweeperPlugin extends Plugin {
 	}
 
 	async loadSettings() {
-		this.settings = Object.assign(getDefaultSettings(), await this.loadData());
+		const data = await this.loadData() || {};
+		migrateSettings(data);
+		this.settings = Object.assign(getDefaultSettings(), data);
 	}
 
 	async saveSettings() {
@@ -168,16 +171,33 @@ export default class SweeperPlugin extends Plugin {
 		const content = await this.app.vault.read(file);
 		const { content: cleaned, summary } = applyAllRules(content, this.settings.enabledRules);
 
-		if (summary.totalChanges > 0) {
+		if (summary.totalChanges === 0) return;
+
+		if (this.settings.cleanOnSaveMode === "quick") {
 			this.isCleaningFile = true;
 			await this.app.vault.modify(file, cleaned);
 			this.isCleaningFile = false;
 			new Notice(`Auto-cleaned ${summary.totalChanges} items`);
+			return;
 		}
+
+		new CleanupModal(
+			this.app,
+			content,
+			cleaned,
+			summary,
+			async () => {
+				this.isCleaningFile = true;
+				await this.app.vault.modify(file, cleaned);
+				this.isCleaningFile = false;
+				new Notice(`Cleaned ${summary.totalChanges} items`);
+			},
+			{ mode: "save" }
+		).open();
 	}
 
 	private handlePaste(evt: ClipboardEvent, editor: Editor) {
-		if (!this.settings.cleanOnPaste) return;
+		if (this.settings.cleanOnPasteMode === "off") return;
 
 		// Let Obsidian handle HTML content natively (HTML-to-MD conversion)
 		if (evt.clipboardData?.types.includes("text/html")) return;
@@ -191,6 +211,12 @@ export default class SweeperPlugin extends Plugin {
 
 		if (summary.totalChanges === 0) {
 			editor.replaceSelection(original);
+			return;
+		}
+
+		if (this.settings.cleanOnPasteMode === "quick") {
+			editor.replaceSelection(cleaned);
+			new Notice(`Pasted with ${summary.totalChanges} cleanups`);
 			return;
 		}
 

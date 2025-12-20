@@ -10,7 +10,7 @@ interface LinePair {
 
 interface CleanupModalOptions {
 	isPartial?: boolean;
-	mode?: "document" | "paste";
+	mode?: "document" | "paste" | "save";
 	onKeepOriginal?: () => void;
 }
 
@@ -65,11 +65,11 @@ export class CleanupModal extends Modal {
 
 		// Buttons
 		const buttonContainer = contentEl.createDiv({ cls: "sweeper-buttons" });
-		const isPaste = this.options.mode === "paste";
+		const mode = this.options.mode;
 
 		if (this.summary.totalChanges > 0) {
 			const applyBtn = buttonContainer.createEl("button", {
-				text: isPaste ? "Accept" : "Apply Changes",
+				text: mode === "paste" || mode === "save" ? "Accept" : "Apply Changes",
 				cls: "mod-cta",
 			});
 			applyBtn.addEventListener("click", () => {
@@ -78,15 +78,15 @@ export class CleanupModal extends Modal {
 			});
 		}
 
-		const cancelBtn = buttonContainer.createEl("button", {
-			text: isPaste
-				? "Keep Original"
-				: this.summary.totalChanges > 0
-					? "Cancel"
-					: "Close",
-		});
+		const cancelBtnText = mode === "paste"
+			? "Keep Original"
+			: this.summary.totalChanges > 0
+				? "Cancel"
+				: "Close";
+
+		const cancelBtn = buttonContainer.createEl("button", { text: cancelBtnText });
 		cancelBtn.addEventListener("click", () => {
-			if (isPaste && this.options.onKeepOriginal) {
+			if (mode === "paste" && this.options.onKeepOriginal) {
 				this.options.onKeepOriginal();
 			}
 			this.close();

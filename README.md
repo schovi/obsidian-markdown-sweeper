@@ -148,6 +148,13 @@ You can also switch to **Custom** mode and toggle individual rules.
 ## Settings
 
 - **Clean on save**: Automatically clean when saving files
+  - *Off* - Disabled
+  - *Quick* - Clean immediately without preview
+  - *Preview* - Show diff modal on each save
+- **Clean on paste**: Clean plain text pasted from clipboard
+  - *Off* - Disabled
+  - *Quick* - Clean and paste immediately
+  - *Preview* - Show diff with Accept/Keep Original buttons
 - **Preset**: Choose Minimal, Standard, Aggressive, or Custom
 - **Individual rules**: Toggle each rule when in Custom mode
 
