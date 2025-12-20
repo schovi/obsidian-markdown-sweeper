@@ -14,6 +14,13 @@ Markdown comes from everywhere - copy-pasted from web pages, exported from Notio
 
 This plugin normalizes all of it with a single command, showing you exactly what will change before applying.
 
+## See It in Action
+
+Check out the example files to see what Sweeper can do:
+
+- [`examples/mess.md`](examples/mess.md) - A markdown file with common issues (broken headings, mixed list markers, HTML entities, smart quotes, etc.)
+- [`examples/sweeped.md`](examples/sweeped.md) - The same file after running Sweeper with aggressive preset
+
 ## Installation
 
 ### From Obsidian Community Plugins
