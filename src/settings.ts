@@ -8,6 +8,7 @@ export interface SweeperSettings {
 	enabledRules: Record<string, boolean>;
 	collapsedGroups: Record<string, boolean>;
 	cleanOnSave: boolean;
+	cleanOnPaste: boolean;
 	activePreset: PresetTier | "custom";
 }
 
@@ -16,6 +17,7 @@ export function getDefaultSettings(): SweeperSettings {
 		enabledRules: getPresetRules("standard"),
 		collapsedGroups: {},
 		cleanOnSave: false,
+		cleanOnPaste: false,
 		activePreset: "standard",
 	};
 }
@@ -42,6 +44,18 @@ export class SweeperSettingsTab extends PluginSettingTab {
 					.setValue(this.plugin.settings.cleanOnSave)
 					.onChange(async (value) => {
 						this.plugin.settings.cleanOnSave = value;
+						await this.plugin.saveSettings();
+					})
+			);
+
+		new Setting(containerEl)
+			.setName("Clean on paste")
+			.setDesc("Show preview when pasting plain text from clipboard")
+			.addToggle((toggle) =>
+				toggle
+					.setValue(this.plugin.settings.cleanOnPaste)
+					.onChange(async (value) => {
+						this.plugin.settings.cleanOnPaste = value;
 						await this.plugin.saveSettings();
 					})
 			);

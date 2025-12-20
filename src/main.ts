@@ -51,6 +51,10 @@ export default class SweeperPlugin extends Plugin {
 				}
 			})
 		);
+
+		this.registerEvent(
+			this.app.workspace.on("editor-paste", this.handlePaste.bind(this))
+		);
 	}
 
 	async loadSettings() {
@@ -170,6 +174,42 @@ export default class SweeperPlugin extends Plugin {
 			this.isCleaningFile = false;
 			new Notice(`Auto-cleaned ${summary.totalChanges} items`);
 		}
+	}
+
+	private handlePaste(evt: ClipboardEvent, editor: Editor) {
+		if (!this.settings.cleanOnPaste) return;
+
+		// Let Obsidian handle HTML content natively (HTML-to-MD conversion)
+		if (evt.clipboardData?.types.includes("text/html")) return;
+
+		const original = evt.clipboardData?.getData("text/plain");
+		if (!original) return;
+
+		evt.preventDefault();
+
+		const { content: cleaned, summary } = applyAllRules(original, this.settings.enabledRules);
+
+		if (summary.totalChanges === 0) {
+			editor.replaceSelection(original);
+			return;
+		}
+
+		new CleanupModal(
+			this.app,
+			original,
+			cleaned,
+			summary,
+			() => {
+				editor.replaceSelection(cleaned);
+				new Notice(`Pasted with ${summary.totalChanges} cleanups`);
+			},
+			{
+				mode: "paste",
+				onKeepOriginal: () => {
+					editor.replaceSelection(original);
+				},
+			}
+		).open();
 	}
 
 	onunload() {}

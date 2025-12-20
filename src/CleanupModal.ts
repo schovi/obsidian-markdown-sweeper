@@ -10,6 +10,8 @@ interface LinePair {
 
 interface CleanupModalOptions {
 	isPartial?: boolean;
+	mode?: "document" | "paste";
+	onKeepOriginal?: () => void;
 }
 
 export class CleanupModal extends Modal {
@@ -63,10 +65,11 @@ export class CleanupModal extends Modal {
 
 		// Buttons
 		const buttonContainer = contentEl.createDiv({ cls: "sweeper-buttons" });
+		const isPaste = this.options.mode === "paste";
 
 		if (this.summary.totalChanges > 0) {
 			const applyBtn = buttonContainer.createEl("button", {
-				text: "Apply Changes",
+				text: isPaste ? "Accept" : "Apply Changes",
 				cls: "mod-cta",
 			});
 			applyBtn.addEventListener("click", () => {
@@ -76,9 +79,18 @@ export class CleanupModal extends Modal {
 		}
 
 		const cancelBtn = buttonContainer.createEl("button", {
-			text: this.summary.totalChanges > 0 ? "Cancel" : "Close",
+			text: isPaste
+				? "Keep Original"
+				: this.summary.totalChanges > 0
+					? "Cancel"
+					: "Close",
 		});
-		cancelBtn.addEventListener("click", () => this.close());
+		cancelBtn.addEventListener("click", () => {
+			if (isPaste && this.options.onKeepOriginal) {
+				this.options.onKeepOriginal();
+			}
+			this.close();
+		});
 	}
 
 	private renderUnifiedDiff(container: HTMLElement) {
