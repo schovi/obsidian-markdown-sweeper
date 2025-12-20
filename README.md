@@ -1,4 +1,4 @@
-# Sweeper
+# Obsidian Markdown Sweeper
 
 An Obsidian plugin that cleans up messy markdown with a diff preview before applying changes.
 
