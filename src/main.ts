@@ -127,10 +127,12 @@ export default class SweeperPlugin extends Plugin {
 	}
 
 	private runQuickCleanup(editor: Editor) {
+		const loadingNotice = new Notice("Preparing cleanup...", 0);
 		const selection = editor.getSelection();
 
 		if (selection) {
 			const { content: cleaned, summary } = applyAllRules(selection, this.settings.enabledRules);
+			loadingNotice.hide();
 			if (summary.totalChanges > 0) {
 				editor.replaceSelection(cleaned);
 				new Notice(`Cleaned ${summary.totalChanges} items in selection`);
@@ -140,6 +142,7 @@ export default class SweeperPlugin extends Plugin {
 		} else {
 			const content = editor.getValue();
 			const { content: cleaned, summary } = applyAllRules(content, this.settings.enabledRules);
+			loadingNotice.hide();
 			if (summary.totalChanges > 0) {
 				editor.setValue(cleaned);
 				new Notice(`Cleaned ${summary.totalChanges} items`);
@@ -157,7 +160,9 @@ export default class SweeperPlugin extends Plugin {
 				return;
 			}
 
+			const loadingNotice = new Notice("Preparing cleanup...", 0);
 			const { content: cleaned, summary } = applyAllRules(clipboard, this.settings.enabledRules);
+			loadingNotice.hide();
 			editor.replaceSelection(cleaned);
 
 			if (summary.totalChanges > 0) {
@@ -174,14 +179,12 @@ export default class SweeperPlugin extends Plugin {
 		if (this.isCleaningFile) return;
 		if (Date.now() - this.lastPasteTime < 1000) return;
 
-		const loadingNotice = this.settings.cleanOnSaveMode === "preview"
-			? new Notice("Preparing cleanup...", 0)
-			: null;
+		const loadingNotice = new Notice("Preparing cleanup...", 0);
 
 		const content = await this.app.vault.read(file);
 		const { content: cleaned, summary } = applyAllRules(content, this.settings.enabledRules);
 
-		loadingNotice?.hide();
+		loadingNotice.hide();
 
 		if (summary.totalChanges === 0) return;
 
@@ -219,13 +222,11 @@ export default class SweeperPlugin extends Plugin {
 
 		evt.preventDefault();
 
-		const loadingNotice = this.settings.cleanOnPasteMode === "preview"
-			? new Notice("Preparing cleanup...", 0)
-			: null;
+		const loadingNotice = new Notice("Preparing cleanup...", 0);
 
 		const { content: cleaned, summary } = applyAllRules(original, this.settings.enabledRules);
 
-		loadingNotice?.hide();
+		loadingNotice.hide();
 
 		if (summary.totalChanges === 0) {
 			editor.replaceSelection(original);
