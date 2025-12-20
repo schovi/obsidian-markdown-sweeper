@@ -8,25 +8,25 @@ function normalizeEmphasis(content: string): RuleResult {
 	const result = processOutsideCode(content, (text) => {
 		let processed = text;
 
-		// Bold: __text__ → **text**
-		processed = processed.replace(/__([^_]+)__/g, (match, inner) => {
+		// Bold: __text__ → **text__ (don't match across lines)
+		processed = processed.replace(/__([^_\n]+)__/g, (match, inner) => {
 			changesCount++;
 			return `**${inner}**`;
 		});
 
 		// Italic: _text_ → *text* (but not inside words like snake_case)
-		// Only match _text_ at word boundaries
+		// Only match _text_ at word boundaries, and skip if inner contains asterisks
 		processed = processed.replace(
-			/(^|[\s,;:!?([{])_([^_\s][^_]*[^_\s])_([\s,;:!?)\]}]|$)/g,
+			/(^|[\s,;:!?([{])_([^_*\s][^_*]*[^_*\s])_([\s,;:!?)\]}]|$)/g,
 			(match, before, inner, after) => {
 				changesCount++;
 				return `${before}*${inner}*${after}`;
 			}
 		);
 
-		// Handle single character italic: _x_
+		// Handle single character italic: _x_ (but not if it's an asterisk)
 		processed = processed.replace(
-			/(^|[\s,;:!?([{])_([^_\s])_([\s,;:!?)\]}]|$)/g,
+			/(^|[\s,;:!?([{])_([^_*\s])_([\s,;:!?)\]}]|$)/g,
 			(match, before, inner, after) => {
 				changesCount++;
 				return `${before}*${inner}*${after}`;

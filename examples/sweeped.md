@@ -1,9 +1,9 @@
 # Broken Markdown Examples
 
 This file has multiple spaces and trailing whitespace.
-  And this line starts with a tab.
+And this line starts with a tab.
 
-### Skipped heading level without space
+## Skipped heading level without space
 
 - Mixed list markers
 - Different markers
@@ -12,7 +12,7 @@ This file has multiple spaces and trailing whitespace.
 - Even more markers
 - [ ] Empty checkbox wrong
 - [x] Uppercase X checkbox
--[x] No space before bracket
+- [x] No space before bracket
 
 1. First item
 2. Wrong number
@@ -22,14 +22,14 @@ This file has multiple spaces and trailing whitespace.
 - Another item
 - Empty list item above
 
-  This paragraph has leading indentation.
+This paragraph has leading indentation.
 
 [Link](with space)
 [Another link]( also space )
 
 "Smart quotes" and 'single quotes' and it's an apostrophe
 
- HTML&entities
+HTML&entities
 
 **Bold tag** and *italic*
 
@@ -49,4 +49,4 @@ different fence
 ---
 
 **Emphasis with * inside**
-*Another *emphasis* test*
+*Another _emphasis* test_

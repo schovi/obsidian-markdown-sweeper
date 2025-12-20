@@ -7,8 +7,8 @@ function decodeHtmlEntities(content: string): RuleResult {
 	const entities: Record<string, string> = {
 		"&nbsp;": " ",
 		"&amp;": "&",
-		"&lt;": "<",
-		"&gt;": ">",
+		// Don't decode &lt; and &gt; - they're intentionally escaped to show literal < >
+		// Decoding them creates text that looks like HTML tags to markdown renderers
 		"&quot;": '"',
 		"&#39;": "'",
 		"&apos;": "'",
@@ -32,8 +32,8 @@ function decodeHtmlEntities(content: string): RuleResult {
 export const htmlEntitiesRule: RuleDefinition = {
 	id: "htmlEntities",
 	name: "HTML entities",
-	group: "code",
-	tier: "aggressive",
+	group: "html",
+	tier: "standard",
 	example: "&amp; → &",
 	fn: decodeHtmlEntities,
 };

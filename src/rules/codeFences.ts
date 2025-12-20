@@ -16,7 +16,7 @@ function normalizeCodeFences(content: string): RuleResult {
 export const codeFencesRule: RuleDefinition = {
 	id: "codeFences",
 	name: "Code fences",
-	group: "code",
+	group: "formatting",
 	tier: "aggressive",
 	example: "~~~ → ```",
 	fn: normalizeCodeFences,

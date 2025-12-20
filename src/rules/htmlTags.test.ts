@@ -176,4 +176,18 @@ describe("htmlTagsRule", () => {
 		expect(result.content).toBe("**outside** `<b>inside</b>` **outside**");
 		expect(result.changesCount).toBe(2);
 	});
+
+	it("preserves unknown/custom HTML tags (standard tier behavior)", () => {
+		const input = "<custom-element>content</custom-element>";
+		const result = htmlTagsRule.fn(input);
+		expect(result.content).toBe("<custom-element>content</custom-element>");
+		expect(result.changesCount).toBe(0);
+	});
+
+	it("preserves orphan tags that look like HTML", () => {
+		const input = "text <here> more text";
+		const result = htmlTagsRule.fn(input);
+		expect(result.content).toBe("text <here> more text");
+		expect(result.changesCount).toBe(0);
+	});
 });

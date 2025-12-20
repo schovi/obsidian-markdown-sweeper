@@ -12,7 +12,7 @@ export const ruleGroups = [
 	"lists",
 	"formatting",
 	"headings",
-	"code",
+	"html",
 	"blockElements",
 	"obsidian",
 ] as const;
@@ -25,7 +25,7 @@ export const ruleGroupNames: Record<RuleGroup, string> = {
 	lists: "Lists",
 	formatting: "Formatting",
 	headings: "Headings",
-	code: "Code",
+	html: "HTML",
 	blockElements: "Block elements",
 	obsidian: "Obsidian-specific",
 };

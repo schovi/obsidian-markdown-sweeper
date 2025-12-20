@@ -4,6 +4,7 @@ import { trailingWhitespaceContentRule, trailingWhitespaceBlankRule } from "./tr
 import { leadingIndentationRule } from "./leadingIndentation";
 import { htmlEntitiesRule } from "./htmlEntities";
 import { htmlTagsRule } from "./htmlTags";
+import { htmlCleanupAggressiveRule } from "./htmlCleanupAggressive";
 import { smartQuotesRule } from "./smartQuotes";
 import { linkSpacesRule } from "./linkSpaces";
 import { headingSpacesRule } from "./headingSpaces";
@@ -46,18 +47,20 @@ export const rules: RuleDefinition[] = [
 	// Formatting
 	smartQuotesRule,
 	linkSpacesRule,
-	emphasisRule,
 	horizontalRulesRule,
 	horizontalRulesDedupeRule,
+	emphasisRule,
+	codeFencesRule,
 
 	// Headings
 	headingSpacesRule,
 	headingLevelsRule,
 
-	// Code
-	htmlEntitiesRule,
+	// HTML (standard: convert known HTML, decode safe entities)
 	htmlTagsRule,
-	codeFencesRule,
+	htmlEntitiesRule,
+	// HTML (aggressive: decode all entities, convert, strip remaining)
+	htmlCleanupAggressiveRule,
 
 	// Whitespace cleanup (after HTML conversion)
 	lineLeadingWhitespaceRule,

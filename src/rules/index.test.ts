@@ -140,7 +140,7 @@ describe("formatSummary", () => {
 		const result = formatSummary(summary);
 		// Order follows registry order (by group)
 		expect(result).toBe(
-			"Cleaned: Extra blank lines, Blank lines in lists, Blank line whitespace, Trailing whitespace, Multiple spaces, Common indentation, List markers, Checkboxes, Smart quotes, Link spaces, Heading spaces, HTML entities, HTML to Markdown"
+			"Cleaned: Extra blank lines, Blank lines in lists, Blank line whitespace, Trailing whitespace, Multiple spaces, Common indentation, List markers, Checkboxes, Smart quotes, Link spaces, Heading spaces, HTML to Markdown, HTML entities"
 		);
 	});
 

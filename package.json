@@ -1,5 +1,5 @@
 {
-	"name": "md-cleanup",
+	"name": "sweeper",
 	"version": "1.0.0",
 	"description": "Clean up messy markdown with a diff preview",
 	"main": "main.js",

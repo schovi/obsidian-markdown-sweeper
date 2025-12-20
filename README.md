@@ -1,4 +1,4 @@
-# Markdown Cleanup
+# Sweeper
 
 An Obsidian plugin that cleans up messy markdown with a diff preview before applying changes.
 
@@ -19,13 +19,13 @@ This plugin normalizes all of it with a single command, showing you exactly what
 ### From Obsidian Community Plugins
 
 1. Open Settings → Community Plugins
-2. Search for "Markdown Cleanup"
+2. Search for "Sweeper"
 3. Install and enable
 
 ### Manual Installation
 
 1. Download `main.js`, `manifest.json`, and `styles.css` from the latest release
-2. Create folder: `<vault>/.obsidian/plugins/md-cleanup/`
+2. Create folder: `<vault>/.obsidian/plugins/sweeper/`
 3. Copy the files into that folder
 4. Enable in Settings → Community Plugins
 
@@ -107,6 +107,7 @@ You can also switch to **Custom** mode and toggle individual rules.
 | Emphasis style | Aggressive | `_italic_` → `*italic*` |
 | Horizontal rules | Aggressive | `***` → `---` |
 | Dedupe horizontal rules | Aggressive | `---`,`---`,`---` → `---` |
+| Code fences | Aggressive | `~~~` → ` ``` ` |
 
 ### Headings
 
@@ -115,13 +116,15 @@ You can also switch to **Custom** mode and toggle individual rules.
 | Heading spaces | Standard | `##Title` → `## Title` |
 | Fix heading level gaps | Aggressive | `# H1` → `### H3` becomes `## H3` |
 
-### Code
+### HTML
 
 | Rule | Preset | Example |
 |------|--------|---------|
-| HTML entities | Aggressive | `&amp;` → `&` |
-| HTML to Markdown | Aggressive | `<b>text</b>` → `**text**` |
-| Code fences | Aggressive | `~~~` → ` ``` ` |
+| HTML to Markdown | Standard | `<b>text</b>` → `**text**` (known tags only) |
+| HTML entities | Standard | `&amp;` → `&`, `&nbsp;` → space (safe entities only) |
+| Aggressive HTML cleanup | Aggressive | `&lt;b&gt;` → `**`, strips unknown tags |
+
+**Note**: Standard HTML cleanup preserves `&lt;`/`&gt;` entities and unknown HTML tags (they may be intentional). Aggressive mode decodes everything and strips all remaining HTML.
 
 ### Block Elements
 

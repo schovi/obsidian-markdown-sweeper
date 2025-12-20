@@ -16,11 +16,11 @@ describe("htmlEntitiesRule", () => {
 		expect(result.changesCount).toBe(1);
 	});
 
-	it("decodes &lt; and &gt;", () => {
+	it("preserves &lt; and &gt; to avoid creating HTML-like text", () => {
 		const input = "&lt;div&gt;";
 		const result = htmlEntitiesRule.fn(input);
-		expect(result.content).toBe("<div>");
-		expect(result.changesCount).toBe(2);
+		expect(result.content).toBe("&lt;div&gt;");
+		expect(result.changesCount).toBe(0);
 	});
 
 	it("decodes &quot;", () => {
@@ -30,11 +30,11 @@ describe("htmlEntitiesRule", () => {
 		expect(result.changesCount).toBe(2);
 	});
 
-	it("decodes multiple entities", () => {
+	it("decodes multiple entities but preserves angle brackets", () => {
 		const input = "&nbsp;&amp;&lt;&gt;";
 		const result = htmlEntitiesRule.fn(input);
-		expect(result.content).toBe(" &<>");
-		expect(result.changesCount).toBe(4);
+		expect(result.content).toBe(" &&lt;&gt;");
+		expect(result.changesCount).toBe(2);
 	});
 
 	it("is case insensitive", () => {

@@ -1,4 +1,4 @@
-# md-cleanup
+# Sweeper
 
 Obsidian plugin for cleaning up messy markdown. Shows diff preview before applying changes.
 
@@ -109,9 +109,9 @@ import { yourRule } from "./yourRule";
 - `blankLines` - Empty line handling
 - `whitespace` - Spaces, tabs, indentation
 - `lists` - List markers, checkboxes, numbering
-- `formatting` - Quotes, emphasis, links
+- `formatting` - Quotes, emphasis, links, code fences
 - `headings` - Heading syntax
-- `code` - Code blocks, HTML entities
+- `html` - HTML tags and entities
 - `blockElements` - Blockquotes
 - `obsidian` - Obsidian-specific (tags)
 
@@ -129,4 +129,4 @@ function processOutsideCode(content: string, processor: (text: string) => string
 }
 ```
 
-Used by: emphasis, htmlEntities, tagNormalization
+Used by: emphasis, htmlEntities, htmlTags, htmlCleanupAggressive, tagNormalization

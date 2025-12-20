@@ -2,19 +2,19 @@ import { Editor, MarkdownView, Notice, Plugin, TFile } from "obsidian";
 import { applyAllRules } from "./rules";
 import { CleanupModal } from "./CleanupModal";
 import {
-	MarkdownCleanupSettings,
-	MarkdownCleanupSettingsTab,
+	SweeperSettings,
+	SweeperSettingsTab,
 	getDefaultSettings,
 } from "./settings";
 
-export default class MarkdownCleanupPlugin extends Plugin {
-	settings: MarkdownCleanupSettings;
+export default class SweeperPlugin extends Plugin {
+	settings: SweeperSettings;
 	private isCleaningFile = false;
 
 	async onload() {
 		await this.loadSettings();
 
-		this.addSettingTab(new MarkdownCleanupSettingsTab(this.app, this));
+		this.addSettingTab(new SweeperSettingsTab(this.app, this));
 
 		this.addRibbonIcon("eraser", "Cleanup Markdown", () => {
 			this.runCleanup();

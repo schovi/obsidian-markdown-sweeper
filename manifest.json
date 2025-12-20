@@ -1,6 +1,6 @@
 {
-	"id": "md-cleanup",
-	"name": "Markdown Cleanup",
+	"id": "sweeper",
+	"name": "Sweeper",
 	"version": "0.0.1",
 	"minAppVersion": "0.15.0",
 	"description": "Clean up messy markdown with a diff preview before applying changes",

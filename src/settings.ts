@@ -1,17 +1,17 @@
 import { App, PluginSettingTab, Setting } from "obsidian";
-import type MarkdownCleanupPlugin from "./main";
+import type SweeperPlugin from "./main";
 import { rules } from "./rules/registry";
 import { RuleGroup, ruleGroups, ruleGroupNames, RuleDefinition, PresetTier } from "./rules/types";
 import { getPresetRules, presetNames } from "./presets";
 
-export interface MarkdownCleanupSettings {
+export interface SweeperSettings {
 	enabledRules: Record<string, boolean>;
 	collapsedGroups: Record<string, boolean>;
 	cleanOnSave: boolean;
 	activePreset: PresetTier | "custom";
 }
 
-export function getDefaultSettings(): MarkdownCleanupSettings {
+export function getDefaultSettings(): SweeperSettings {
 	return {
 		enabledRules: getPresetRules("standard"),
 		collapsedGroups: {},
@@ -20,10 +20,10 @@ export function getDefaultSettings(): MarkdownCleanupSettings {
 	};
 }
 
-export class MarkdownCleanupSettingsTab extends PluginSettingTab {
-	plugin: MarkdownCleanupPlugin;
+export class SweeperSettingsTab extends PluginSettingTab {
+	plugin: SweeperPlugin;
 
-	constructor(app: App, plugin: MarkdownCleanupPlugin) {
+	constructor(app: App, plugin: SweeperPlugin) {
 		super(app, plugin);
 		this.plugin = plugin;
 	}
@@ -74,7 +74,7 @@ export class MarkdownCleanupSettingsTab extends PluginSettingTab {
 
 		const collapseBtn = containerEl.createEl("button", {
 			text: allCollapsed ? "Expand all" : "Collapse all",
-			cls: "md-cleanup-collapse-btn",
+			cls: "sweeper-collapse-btn",
 		});
 		collapseBtn.addEventListener("click", async () => {
 			const newState = !allCollapsed;
@@ -113,21 +113,21 @@ export class MarkdownCleanupSettingsTab extends PluginSettingTab {
 			(r) => this.plugin.settings.enabledRules[r.id] ?? true
 		).length;
 
-		const groupContainer = container.createDiv({ cls: "md-cleanup-group" });
+		const groupContainer = container.createDiv({ cls: "sweeper-group" });
 
-		const header = groupContainer.createDiv({ cls: "md-cleanup-group-header" });
+		const header = groupContainer.createDiv({ cls: "sweeper-group-header" });
 		header.createSpan({
 			text: isCollapsed ? "▶ " : "▼ ",
-			cls: "md-cleanup-group-arrow",
+			cls: "sweeper-group-arrow",
 		});
 		header.createSpan({ text: ruleGroupNames[group] });
 		header.createSpan({
 			text: `${enabledCount} of ${groupRules.length}`,
-			cls: "md-cleanup-group-count",
+			cls: "sweeper-group-count",
 		});
 
 		const rulesContainer = groupContainer.createDiv({
-			cls: "md-cleanup-group-rules",
+			cls: "sweeper-group-rules",
 		});
 
 		if (isCollapsed) {

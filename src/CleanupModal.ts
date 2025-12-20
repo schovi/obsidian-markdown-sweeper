@@ -37,32 +37,32 @@ export class CleanupModal extends Modal {
 
 	onOpen() {
 		const { contentEl } = this;
-		contentEl.addClass("md-cleanup-modal");
+		contentEl.addClass("sweeper-modal");
 
 		// Header with summary
-		const header = contentEl.createDiv({ cls: "md-cleanup-header" });
-		header.createEl("h2", { text: "Markdown Cleanup Preview" });
+		const header = contentEl.createDiv({ cls: "sweeper-header" });
+		header.createEl("h2", { text: "Sweeper Preview" });
 
 		const summaryText = formatSummary(this.summary);
 		header.createEl("p", {
 			text: summaryText,
-			cls: this.summary.totalChanges > 0 ? "md-cleanup-summary" : "md-cleanup-no-changes",
+			cls: this.summary.totalChanges > 0 ? "sweeper-summary" : "sweeper-no-changes",
 		});
 
 		// Diff container
-		const diffContainer = contentEl.createDiv({ cls: "md-cleanup-diff-container" });
+		const diffContainer = contentEl.createDiv({ cls: "sweeper-diff-container" });
 
 		if (this.summary.totalChanges === 0) {
 			diffContainer.createEl("p", {
 				text: "Your document is already clean!",
-				cls: "md-cleanup-no-changes-message",
+				cls: "sweeper-no-changes-message",
 			});
 		} else {
 			this.renderUnifiedDiff(diffContainer);
 		}
 
 		// Buttons
-		const buttonContainer = contentEl.createDiv({ cls: "md-cleanup-buttons" });
+		const buttonContainer = contentEl.createDiv({ cls: "sweeper-buttons" });
 
 		if (this.summary.totalChanges > 0) {
 			const applyBtn = buttonContainer.createEl("button", {
@@ -83,7 +83,7 @@ export class CleanupModal extends Modal {
 
 	private renderUnifiedDiff(container: HTMLElement) {
 		const linePairs = this.computeLinePairs();
-		const diffEl = container.createDiv({ cls: "md-cleanup-diff" });
+		const diffEl = container.createDiv({ cls: "sweeper-diff" });
 
 		if (this.options.isPartial) {
 			this.renderEllipsis(diffEl);
@@ -107,9 +107,9 @@ export class CleanupModal extends Modal {
 	}
 
 	private renderEllipsis(container: HTMLElement) {
-		const lineEl = container.createDiv({ cls: "md-cleanup-line md-cleanup-line-ellipsis" });
-		lineEl.createSpan({ text: "  ", cls: "md-cleanup-prefix" });
-		lineEl.createSpan({ text: "...", cls: "md-cleanup-ellipsis" });
+		const lineEl = container.createDiv({ cls: "sweeper-line sweeper-line-ellipsis" });
+		lineEl.createSpan({ text: "  ", cls: "sweeper-prefix" });
+		lineEl.createSpan({ text: "...", cls: "sweeper-ellipsis" });
 	}
 
 	private computeLinePairs(): LinePair[] {
@@ -237,29 +237,29 @@ export class CleanupModal extends Modal {
 	}
 
 	private renderUnchangedLine(container: HTMLElement, line: string) {
-		const lineEl = container.createDiv({ cls: "md-cleanup-line md-cleanup-line-unchanged" });
-		lineEl.createSpan({ text: "  ", cls: "md-cleanup-prefix" });
+		const lineEl = container.createDiv({ cls: "sweeper-line sweeper-line-unchanged" });
+		lineEl.createSpan({ text: "  ", cls: "sweeper-prefix" });
 		lineEl.createSpan({ text: line || " " });
 	}
 
 	private renderRemovedLine(container: HTMLElement, line: string) {
-		const lineEl = container.createDiv({ cls: "md-cleanup-line md-cleanup-line-removed" });
-		lineEl.createSpan({ text: "- ", cls: "md-cleanup-prefix" });
+		const lineEl = container.createDiv({ cls: "sweeper-line sweeper-line-removed" });
+		lineEl.createSpan({ text: "- ", cls: "sweeper-prefix" });
 
 		// Check if this is a blank line (empty or whitespace-only)
 		if (line.trim() === "") {
 			if (line.length > 0) {
-				this.renderVisibleWhitespace(lineEl, line, "md-cleanup-char-removed");
+				this.renderVisibleWhitespace(lineEl, line, "sweeper-char-removed");
 			}
-			lineEl.createSpan({ text: " ← removed", cls: "md-cleanup-blank-label" });
+			lineEl.createSpan({ text: " ← removed", cls: "sweeper-blank-label" });
 		} else {
 			this.renderLineWithWhitespace(lineEl, line, true);
 		}
 	}
 
 	private renderAddedLine(container: HTMLElement, line: string) {
-		const lineEl = container.createDiv({ cls: "md-cleanup-line md-cleanup-line-added" });
-		lineEl.createSpan({ text: "+ ", cls: "md-cleanup-prefix" });
+		const lineEl = container.createDiv({ cls: "sweeper-line sweeper-line-added" });
+		lineEl.createSpan({ text: "+ ", cls: "sweeper-prefix" });
 		this.renderLineWithWhitespace(lineEl, line, false);
 	}
 
@@ -272,19 +272,19 @@ export class CleanupModal extends Modal {
 		}
 
 		// Render the removed line with character highlighting
-		const removedEl = container.createDiv({ cls: "md-cleanup-line md-cleanup-line-removed" });
-		removedEl.createSpan({ text: "- ", cls: "md-cleanup-prefix" });
+		const removedEl = container.createDiv({ cls: "sweeper-line sweeper-line-removed" });
+		removedEl.createSpan({ text: "- ", cls: "sweeper-prefix" });
 		this.renderCharDiff(removedEl, oldLine, newLine, true);
 
 		// Render the added line with character highlighting
-		const addedEl = container.createDiv({ cls: "md-cleanup-line md-cleanup-line-added" });
-		addedEl.createSpan({ text: "+ ", cls: "md-cleanup-prefix" });
+		const addedEl = container.createDiv({ cls: "sweeper-line sweeper-line-added" });
+		addedEl.createSpan({ text: "+ ", cls: "sweeper-prefix" });
 		this.renderCharDiff(addedEl, oldLine, newLine, false);
 	}
 
 	private renderWhitespaceOnlyChange(container: HTMLElement, oldLine: string, newLine: string) {
-		const lineEl = container.createDiv({ cls: "md-cleanup-line md-cleanup-line-whitespace" });
-		lineEl.createSpan({ text: "  ", cls: "md-cleanup-prefix" });
+		const lineEl = container.createDiv({ cls: "sweeper-line sweeper-line-whitespace" });
+		lineEl.createSpan({ text: "  ", cls: "sweeper-prefix" });
 
 		// Detect leading and trailing whitespace changes
 		const oldLeading = oldLine.match(/^[ \t]*/)?.[0] || "";
@@ -297,15 +297,15 @@ export class CleanupModal extends Modal {
 
 		if (newLine === "" && (removedLeading || removedTrailing)) {
 			// Blank line that had only whitespace
-			this.renderVisibleWhitespace(lineEl, oldLine, "md-cleanup-ws-removed");
+			this.renderVisibleWhitespace(lineEl, oldLine, "sweeper-ws-removed");
 			lineEl.createSpan({
 				text: ` ← blank lines (${this.summary.results.get("trailingWhitespaceBlank") || 0})`,
-				cls: "md-cleanup-blank-label"
+				cls: "sweeper-blank-label"
 			});
 		} else {
 			// Show removed leading whitespace
 			if (removedLeading) {
-				this.renderVisibleWhitespace(lineEl, removedLeading, "md-cleanup-ws-removed");
+				this.renderVisibleWhitespace(lineEl, removedLeading, "sweeper-ws-removed");
 			}
 
 			// Show the actual content
@@ -313,7 +313,7 @@ export class CleanupModal extends Modal {
 
 			// Show removed trailing whitespace
 			if (removedTrailing) {
-				this.renderVisibleWhitespace(lineEl, removedTrailing, "md-cleanup-ws-removed");
+				this.renderVisibleWhitespace(lineEl, removedTrailing, "sweeper-ws-removed");
 			}
 		}
 	}
@@ -330,11 +330,11 @@ export class CleanupModal extends Modal {
 				if (part.removed) {
 					// This text was removed - highlight it
 					if (isWhitespaceOnly && /^\s+$/.test(part.value)) {
-						this.renderVisibleWhitespace(container, part.value, "md-cleanup-char-removed");
+						this.renderVisibleWhitespace(container, part.value, "sweeper-char-removed");
 					} else {
 						container.createSpan({
 							text: part.value,
-							cls: "md-cleanup-char-removed",
+							cls: "sweeper-char-removed",
 						});
 					}
 				} else if (!part.added) {
@@ -347,7 +347,7 @@ export class CleanupModal extends Modal {
 					// This text was added - highlight it
 					container.createSpan({
 						text: part.value,
-						cls: "md-cleanup-char-added",
+						cls: "sweeper-char-added",
 					});
 				} else if (!part.removed) {
 					// Unchanged text
@@ -358,7 +358,7 @@ export class CleanupModal extends Modal {
 
 		// Handle empty line display
 		if ((showOld && oldLine === "") || (!showOld && newLine === "")) {
-			container.createSpan({ text: "(empty line)", cls: "md-cleanup-empty-line" });
+			container.createSpan({ text: "(empty line)", cls: "sweeper-empty-line" });
 		}
 	}
 
@@ -368,7 +368,7 @@ export class CleanupModal extends Modal {
 
 	private renderLineWithWhitespace(container: HTMLElement, line: string, highlightTrailing: boolean) {
 		if (line === "") {
-			container.createSpan({ text: "(empty line)", cls: "md-cleanup-empty-line" });
+			container.createSpan({ text: "(empty line)", cls: "sweeper-empty-line" });
 			return;
 		}
 
@@ -377,7 +377,7 @@ export class CleanupModal extends Modal {
 			const match = line.match(/^(.*?)(\s+)$/);
 			if (match) {
 				container.createSpan({ text: match[1] });
-				this.renderVisibleWhitespace(container, match[2], "md-cleanup-char-removed");
+				this.renderVisibleWhitespace(container, match[2], "sweeper-char-removed");
 				return;
 			}
 		}
@@ -397,7 +397,7 @@ export class CleanupModal extends Modal {
 				visible += char;
 			}
 		}
-		container.createSpan({ text: visible, cls: cls + " md-cleanup-whitespace" });
+		container.createSpan({ text: visible, cls: cls + " sweeper-whitespace" });
 	}
 
 	onClose() {
