@@ -43,7 +43,12 @@ export class CleanupModal extends Modal {
 
 		// Header with summary
 		const header = contentEl.createDiv({ cls: "sweeper-header" });
-		header.createEl("h2", { text: "Sweeper Preview" });
+		const title = this.options.mode === "paste"
+			? "Paste cleanup preview"
+			: this.options.mode === "save"
+				? "Save cleanup preview"
+				: "Sweeper Preview";
+		header.createEl("h2", { text: title });
 
 		const summaryText = formatSummary(this.summary);
 		header.createEl("p", {
@@ -78,8 +83,8 @@ export class CleanupModal extends Modal {
 			});
 		}
 
-		const cancelBtnText = mode === "paste"
-			? "Keep Original"
+		const cancelBtnText = (mode === "paste" || mode === "save")
+			? "Save original"
 			: this.summary.totalChanges > 0
 				? "Cancel"
 				: "Close";

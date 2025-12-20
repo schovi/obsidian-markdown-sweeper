@@ -11,6 +11,7 @@ import {
 export default class SweeperPlugin extends Plugin {
 	settings: SweeperSettings;
 	private isCleaningFile = false;
+	private lastPasteTime = 0;
 
 	async onload() {
 		await this.loadSettings();
@@ -90,11 +91,13 @@ export default class SweeperPlugin extends Plugin {
 	}
 
 	private runCleanupOnDocument(editor: Editor) {
+		const loadingNotice = new Notice("Preparing cleanup...", 0);
 		const originalContent = editor.getValue();
 		const { content: cleanedContent, summary } = applyAllRules(
 			originalContent,
 			this.settings.enabledRules
 		);
+		loadingNotice.hide();
 
 		new CleanupModal(this.app, originalContent, cleanedContent, summary, () => {
 			editor.setValue(cleanedContent);
@@ -103,10 +106,12 @@ export default class SweeperPlugin extends Plugin {
 	}
 
 	private runCleanupOnSelection(editor: Editor, selection: string) {
+		const loadingNotice = new Notice("Preparing cleanup...", 0);
 		const { content: cleanedContent, summary } = applyAllRules(
 			selection,
 			this.settings.enabledRules
 		);
+		loadingNotice.hide();
 
 		new CleanupModal(
 			this.app,
@@ -167,9 +172,16 @@ export default class SweeperPlugin extends Plugin {
 
 	private async cleanFileOnSave(file: TFile) {
 		if (this.isCleaningFile) return;
+		if (Date.now() - this.lastPasteTime < 1000) return;
+
+		const loadingNotice = this.settings.cleanOnSaveMode === "preview"
+			? new Notice("Preparing cleanup...", 0)
+			: null;
 
 		const content = await this.app.vault.read(file);
 		const { content: cleaned, summary } = applyAllRules(content, this.settings.enabledRules);
+
+		loadingNotice?.hide();
 
 		if (summary.totalChanges === 0) return;
 
@@ -207,15 +219,23 @@ export default class SweeperPlugin extends Plugin {
 
 		evt.preventDefault();
 
+		const loadingNotice = this.settings.cleanOnPasteMode === "preview"
+			? new Notice("Preparing cleanup...", 0)
+			: null;
+
 		const { content: cleaned, summary } = applyAllRules(original, this.settings.enabledRules);
+
+		loadingNotice?.hide();
 
 		if (summary.totalChanges === 0) {
 			editor.replaceSelection(original);
+			this.lastPasteTime = Date.now();
 			return;
 		}
 
 		if (this.settings.cleanOnPasteMode === "quick") {
 			editor.replaceSelection(cleaned);
+			this.lastPasteTime = Date.now();
 			new Notice(`Pasted with ${summary.totalChanges} cleanups`);
 			return;
 		}
@@ -227,12 +247,14 @@ export default class SweeperPlugin extends Plugin {
 			summary,
 			() => {
 				editor.replaceSelection(cleaned);
+				this.lastPasteTime = Date.now();
 				new Notice(`Pasted with ${summary.totalChanges} cleanups`);
 			},
 			{
 				mode: "paste",
 				onKeepOriginal: () => {
 					editor.replaceSelection(original);
+					this.lastPasteTime = Date.now();
 				},
 			}
 		).open();
