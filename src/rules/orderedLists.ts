@@ -14,7 +14,8 @@ function renumberOrderedLists(content: string): RuleResult {
 
 		if (!match) {
 			// Not an ordered list item - reset counters for non-list content
-			if (line.trim() !== "" && !line.match(/^\s*[-*+]\s/)) {
+			// Preserve counters for: empty lines, unordered lists, indented content (nested under list items)
+			if (line.trim() !== "" && !line.match(/^\s*[-*+]\s/) && !line.match(/^\s/)) {
 				counters.clear();
 				lastIndent = -1;
 			}

@@ -46,6 +46,27 @@ describe("orderedListsRule", () => {
 		expect(result.changesCount).toBe(2);
 	});
 
+	it("continues numbering after nested code block", () => {
+		const input = `1. First item
+   \`\`\`kotlin
+   interface Example {
+       val id: String
+   }
+   \`\`\`
+1. Second item
+1. Third item`;
+		const result = orderedListsRule.fn(input);
+		expect(result.content).toBe(`1. First item
+   \`\`\`kotlin
+   interface Example {
+       val id: String
+   }
+   \`\`\`
+2. Second item
+3. Third item`);
+		expect(result.changesCount).toBe(2);
+	});
+
 	it("resets counter after non-list content", () => {
 		const input = `1. first
 2. second
