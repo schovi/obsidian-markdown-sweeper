@@ -2,6 +2,13 @@
 
 An Obsidian plugin that cleans up messy markdown with a diff preview before applying changes.
 
+<p align="center">
+  <img src="doc/1-mess.jpeg" width="24%" alt="Messy markdown">
+  <img src="doc/2-diff.jpeg" width="24%" alt="Diff preview">
+  <img src="doc/3-sweeped.jpeg" width="24%" alt="Cleaned result">
+  <img src="doc/4-settings.jpeg" width="24%" alt="Settings">
+</p>
+
 ## Why?
 
 Markdown comes from everywhere - copy-pasted from web pages, exported from Notion, converted from Word docs, or AI-generated content. Each source introduces its own quirks:
