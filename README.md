@@ -21,6 +21,8 @@ Markdown comes from everywhere - copy-pasted from web pages, exported from Notio
 
 This plugin normalizes all of it with a single command, showing you exactly what will change before applying.
 
+> **💡 Tip:** When pasting from external sources (web, Notion, Word), use `Cmd+Shift+V` (Mac) or `Ctrl+Shift+V` (Windows/Linux) to paste as plain text. This avoids most formatting issues before they happen.
+
 ## See It in Action
 
 Check out the example files to see what Sweeper can do:

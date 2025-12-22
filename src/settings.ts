@@ -66,7 +66,7 @@ export class SweeperSettingsTab extends PluginSettingTab {
 
 		new Setting(containerEl)
 			.setName("Clean on paste")
-			.setDesc("Clean pasted plain text from clipboard")
+			.setDesc("Clean pasted plain text from clipboard. Tip: Use Cmd/Ctrl+Shift+V to paste as plain text and avoid most formatting issues.")
 			.addDropdown((dropdown) =>
 				dropdown
 					.addOption("off", "Off")
