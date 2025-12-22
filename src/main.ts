@@ -1,4 +1,4 @@
-import { Editor, MarkdownView, Notice, Plugin, TFile } from "obsidian";
+import { Editor, MarkdownView, Notice, Plugin } from "obsidian";
 import { applyAllRules } from "./rules";
 import { CleanupModal } from "./CleanupModal";
 import {
@@ -10,8 +10,7 @@ import {
 
 export default class SweeperPlugin extends Plugin {
 	settings: SweeperSettings;
-	private isCleaningFile = false;
-	private lastPasteTime = 0;
+	private originalCheckCallback: ((checking: boolean) => boolean) | null = null;
 
 	async onload() {
 		await this.loadSettings();
@@ -47,16 +46,77 @@ export default class SweeperPlugin extends Plugin {
 		});
 
 		this.registerEvent(
-			this.app.vault.on("modify", (file) => {
-				if (this.settings.cleanOnSaveMode !== "off" && file instanceof TFile && file.extension === "md") {
-					this.cleanFileOnSave(file);
-				}
-			})
-		);
-
-		this.registerEvent(
 			this.app.workspace.on("editor-paste", this.handlePaste.bind(this))
 		);
+
+		// Defer hook setup - commands may not be loaded yet
+		this.app.workspace.onLayoutReady(() => {
+			this.hookSaveCommand();
+		});
+	}
+
+	private hookSaveCommand() {
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		const commands = (this.app as any).commands?.commands;
+		const saveCommand = commands?.["editor:save-file"];
+
+		if (saveCommand?.checkCallback) {
+			this.originalCheckCallback = saveCommand.checkCallback;
+			saveCommand.checkCallback = (checking: boolean) => {
+				if (checking) {
+					return this.originalCheckCallback!(checking);
+				}
+				this.cleanOnSave(() => this.originalCheckCallback!(false));
+				return true;
+			};
+		}
+	}
+
+	private cleanOnSave(originalSave: () => void) {
+		if (this.settings.cleanOnSaveMode === "off") {
+			originalSave();
+			return;
+		}
+
+		const view = this.app.workspace.getActiveViewOfType(MarkdownView);
+		if (!view || view.file?.extension !== "md") {
+			originalSave();
+			return;
+		}
+
+		const editor = view.editor;
+		const content = editor.getValue();
+		const { content: cleaned, summary } = applyAllRules(content, this.settings.enabledRules);
+
+		if (summary.totalChanges === 0) {
+			originalSave();
+			return;
+		}
+
+		if (this.settings.cleanOnSaveMode === "quick") {
+			editor.setValue(cleaned);
+			originalSave();
+			new Notice(`Cleaned ${summary.totalChanges} items`);
+			return;
+		}
+
+		new CleanupModal(
+			this.app,
+			content,
+			cleaned,
+			summary,
+			() => {
+				editor.setValue(cleaned);
+				originalSave();
+				new Notice(`Cleaned ${summary.totalChanges} items`);
+			},
+			{
+				mode: "save",
+				onKeepOriginal: () => {
+					originalSave();
+				},
+			}
+		).open();
 	}
 
 	async loadSettings() {
@@ -175,42 +235,6 @@ export default class SweeperPlugin extends Plugin {
 		}
 	}
 
-	private async cleanFileOnSave(file: TFile) {
-		if (this.isCleaningFile) return;
-		if (Date.now() - this.lastPasteTime < 1000) return;
-
-		const loadingNotice = new Notice("Preparing cleanup...", 0);
-
-		const content = await this.app.vault.read(file);
-		const { content: cleaned, summary } = applyAllRules(content, this.settings.enabledRules);
-
-		loadingNotice.hide();
-
-		if (summary.totalChanges === 0) return;
-
-		if (this.settings.cleanOnSaveMode === "quick") {
-			this.isCleaningFile = true;
-			await this.app.vault.modify(file, cleaned);
-			this.isCleaningFile = false;
-			new Notice(`Auto-cleaned ${summary.totalChanges} items`);
-			return;
-		}
-
-		new CleanupModal(
-			this.app,
-			content,
-			cleaned,
-			summary,
-			async () => {
-				this.isCleaningFile = true;
-				await this.app.vault.modify(file, cleaned);
-				this.isCleaningFile = false;
-				new Notice(`Cleaned ${summary.totalChanges} items`);
-			},
-			{ mode: "save" }
-		).open();
-	}
-
 	private handlePaste(evt: ClipboardEvent, editor: Editor) {
 		if (this.settings.cleanOnPasteMode === "off") return;
 
@@ -230,13 +254,11 @@ export default class SweeperPlugin extends Plugin {
 
 		if (summary.totalChanges === 0) {
 			editor.replaceSelection(original);
-			this.lastPasteTime = Date.now();
 			return;
 		}
 
 		if (this.settings.cleanOnPasteMode === "quick") {
 			editor.replaceSelection(cleaned);
-			this.lastPasteTime = Date.now();
 			new Notice(`Pasted with ${summary.totalChanges} cleanups`);
 			return;
 		}
@@ -248,18 +270,25 @@ export default class SweeperPlugin extends Plugin {
 			summary,
 			() => {
 				editor.replaceSelection(cleaned);
-				this.lastPasteTime = Date.now();
 				new Notice(`Pasted with ${summary.totalChanges} cleanups`);
 			},
 			{
 				mode: "paste",
 				onKeepOriginal: () => {
 					editor.replaceSelection(original);
-					this.lastPasteTime = Date.now();
 				},
 			}
 		).open();
 	}
 
-	onunload() {}
+	onunload() {
+		if (this.originalCheckCallback) {
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			const commands = (this.app as any).commands?.commands;
+			const saveCommand = commands?.["editor:save-file"];
+			if (saveCommand) {
+				saveCommand.checkCallback = this.originalCheckCallback;
+			}
+		}
+	}
 }

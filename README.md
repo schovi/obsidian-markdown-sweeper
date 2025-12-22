@@ -154,10 +154,10 @@ You can also switch to **Custom** mode and toggle individual rules.
 
 ## Settings
 
-- **Clean on save**: Automatically clean when saving files
+- **Clean on save**: Clean markdown when you press `Cmd/Ctrl+S`
   - *Off* - Disabled
   - *Quick* - Clean immediately without preview
-  - *Preview* - Show diff modal on each save
+  - *Preview* - Show diff modal before saving
 - **Clean on paste**: Clean plain text pasted from clipboard
   - *Off* - Disabled
   - *Quick* - Clean and paste immediately

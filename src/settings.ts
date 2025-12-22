@@ -51,7 +51,7 @@ export class SweeperSettingsTab extends PluginSettingTab {
 
 		new Setting(containerEl)
 			.setName("Clean on save")
-			.setDesc("Automatically clean markdown when saving a file")
+			.setDesc("Clean markdown when you press Cmd/Ctrl+S")
 			.addDropdown((dropdown) =>
 				dropdown
 					.addOption("off", "Off")
