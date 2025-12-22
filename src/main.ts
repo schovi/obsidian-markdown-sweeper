@@ -17,13 +17,13 @@ export default class SweeperPlugin extends Plugin {
 
 		this.addSettingTab(new SweeperSettingsTab(this.app, this));
 
-		this.addRibbonIcon("eraser", "Cleanup Markdown", () => {
+		this.addRibbonIcon("eraser", "Clean Markdown", () => {
 			this.runCleanup();
 		});
 
 		this.addCommand({
 			id: "cleanup-markdown",
-			name: "Cleanup Markdown",
+			name: "Clean Markdown",
 			editorCallback: (editor: Editor) => {
 				this.runCleanupWithEditor(editor);
 			},
