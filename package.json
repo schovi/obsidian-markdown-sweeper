@@ -10,7 +10,7 @@
 		"test:watch": "vitest"
 	},
 	"keywords": [],
-	"author": "",
+	"author": "schovi",
 	"license": "MIT",
 	"devDependencies": {
 		"@types/diff": "^7.0.2",
