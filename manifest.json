@@ -3,7 +3,7 @@
 	"name": "Sweeper",
 	"version": "1.0.0",
 	"minAppVersion": "0.15.0",
-	"description": "Obsidian plugin that cleans up messy (not just) markdown with diff preview. Normalizes whitespace, lists, HTML, and more.",
+	"description": "Cleans up messy markdown with diff preview. Normalizes whitespace, lists, HTML, and more.",
 	"author": "schovi",
 	"authorUrl": "https://github.com/schovi",
 	"isDesktopOnly": false
