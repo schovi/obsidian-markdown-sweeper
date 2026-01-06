@@ -85,4 +85,15 @@ describe("fixIndentationRule", () => {
 		expect(result.content).toBe("- a\n  - b\n    - c\n- d\n  - broken");
 		expect(result.changesCount).toBe(1);
 	});
+
+	it("fixes all siblings with same broken indentation", () => {
+		const input = `4. **System establishes** parent-child relationship:
+   - Sets parent field (if supported)
+   - Or sets epic link field (if pattern uses it)`;
+		const result = fixIndentationRule.fn(input);
+		expect(result.content).toBe(`4. **System establishes** parent-child relationship:
+  - Sets parent field (if supported)
+  - Or sets epic link field (if pattern uses it)`);
+		expect(result.changesCount).toBe(2);
+	});
 });

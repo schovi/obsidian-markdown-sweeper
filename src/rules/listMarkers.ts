@@ -17,6 +17,12 @@ function normalizeListMarkers(content: string): RuleResult {
 		return `${indent}- ${char}`;
 	});
 
+	// Fix duplicate list markers (- - text → - text)
+	result = result.replace(/^(\s*)-\s+(?:-\s+)+/gm, (match, indent) => {
+		changesCount++;
+		return `${indent}- `;
+	});
+
 	// Ensure space after numbered list marker (handles 1.text → 1. text)
 	result = result.replace(/^(\s*)(\d+\.)(\S)/gm, (match, indent, num, char) => {
 		changesCount++;

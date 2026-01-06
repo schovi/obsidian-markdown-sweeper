@@ -124,4 +124,22 @@ text
 		expect(result.content).toBe(input);
 		expect(result.changesCount).toBe(0);
 	});
+
+	it("fixes duplicate list markers", () => {
+		const result = listMarkersRule.fn("- - text");
+		expect(result.content).toBe("- text");
+		expect(result.changesCount).toBe(1);
+	});
+
+	it("fixes triple list markers", () => {
+		const result = listMarkersRule.fn("- - - text");
+		expect(result.content).toBe("- text");
+		expect(result.changesCount).toBe(1);
+	});
+
+	it("fixes duplicate markers with indentation", () => {
+		const result = listMarkersRule.fn("  - - nested item");
+		expect(result.content).toBe("  - nested item");
+		expect(result.changesCount).toBe(1);
+	});
 });

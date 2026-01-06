@@ -1,6 +1,6 @@
 {
 	"name": "sweeper",
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"description": "Clean up messy markdown with a diff preview",
 	"main": "main.js",
 	"scripts": {

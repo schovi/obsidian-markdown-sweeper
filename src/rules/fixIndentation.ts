@@ -8,7 +8,10 @@ function fixExcessiveIndentation(content: string): RuleResult {
 	const lines = content.split("\n");
 	const result: string[] = [];
 
-	const indentStack: number[] = [];
+	// Stack tracks: { original: number, fixed: number }
+	// original = the indent as it appeared in source (for sibling detection)
+	// fixed = the normalized indent (for parent/child calculation)
+	const indentStack: Array<{ original: number; fixed: number }> = [];
 
 	for (const line of lines) {
 		const match = line.match(LIST_ITEM_PATTERN);
@@ -21,23 +24,24 @@ function fixExcessiveIndentation(content: string): RuleResult {
 		const currentIndent = match[1].length;
 		const restOfLine = line.slice(currentIndent);
 
-		// Find the appropriate level in the stack
-		while (indentStack.length > 0 && indentStack[indentStack.length - 1] >= currentIndent) {
+		// Pop items that are at same or greater indent level (going back up the tree)
+		while (indentStack.length > 0 && indentStack[indentStack.length - 1].original >= currentIndent) {
 			indentStack.pop();
 		}
 
-		const parentIndent = indentStack.length > 0 ? indentStack[indentStack.length - 1] : -INDENT_SIZE;
-		const expectedIndent = parentIndent + INDENT_SIZE;
+		const parent = indentStack.length > 0 ? indentStack[indentStack.length - 1] : null;
+		const parentFixedIndent = parent ? parent.fixed : -INDENT_SIZE;
+		const expectedIndent = parentFixedIndent + INDENT_SIZE;
 
 		if (currentIndent > expectedIndent) {
 			// Excessive indentation - fix it
 			changesCount++;
 			result.push(" ".repeat(expectedIndent) + restOfLine);
-			indentStack.push(expectedIndent);
+			indentStack.push({ original: currentIndent, fixed: expectedIndent });
 		} else {
 			// Normal indentation
 			result.push(line);
-			indentStack.push(currentIndent);
+			indentStack.push({ original: currentIndent, fixed: currentIndent });
 		}
 	}
 

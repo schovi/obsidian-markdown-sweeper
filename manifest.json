@@ -1,7 +1,7 @@
 {
 	"id": "sweeper",
 	"name": "Sweeper",
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"minAppVersion": "0.15.0",
 	"description": "Cleans up messy markdown with diff preview. Normalizes whitespace, lists, HTML, and more.",
 	"author": "schovi",
