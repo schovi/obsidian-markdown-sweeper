@@ -7,15 +7,10 @@ And this line starts with a tab.
 ## Skipped heading level without space
 
 ## 1. Numbered header with em dash
-
 ### 1.1. Nested numbered header
-
 ## I. Roman numeral header
-
 ## II. Another Roman header
-
 ## A. Letter header
-
 ### B.1. Letter with subsection
 
 - Mixed list markers
@@ -26,6 +21,7 @@ And this line starts with a tab.
 - Bullet character
 - White circle bullet
 - Black circle bullet
+
 - [ ] Empty checkbox wrong
 - [x] Uppercase X checkbox
 - [x] No space before bracket
