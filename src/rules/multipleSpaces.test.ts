@@ -64,4 +64,11 @@ describe("multipleSpacesRule", () => {
 		expect(result.content).toBe("text ");
 		expect(result.changesCount).toBe(1);
 	});
+
+	it("collapses spaces inside blockquotes", () => {
+		const input = "> Inconsistent   spacing";
+		const result = multipleSpacesRule.fn(input);
+		expect(result.content).toBe("> Inconsistent spacing");
+		expect(result.changesCount).toBe(1);
+	});
 });

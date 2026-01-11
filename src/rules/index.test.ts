@@ -85,6 +85,13 @@ Some paragraph
 		expect(result.content).toBe("word word\n");
 		expect(result.summary.results.get("multipleSpaces")).toBe(1);
 	});
+
+	it("collapses multiple spaces inside blockquotes", () => {
+		const input = "> Inconsistent   spacing";
+		const result = applyAllRules(input);
+		expect(result.content).toBe("> Inconsistent spacing\n");
+		expect(result.summary.results.get("multipleSpaces")).toBe(1);
+	});
 });
 
 function createEmptySummary(): CleanupSummary {
