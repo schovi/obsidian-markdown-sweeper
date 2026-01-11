@@ -8,8 +8,8 @@ function ensureHeadingBlankLines(content: string): RuleResult {
 	for (let i = 0; i < lines.length; i++) {
 		const line = lines[i];
 		const isHeading = /^#{1,6}\s/.test(line);
-		const prevLine = i > 0 ? lines[i - 1] : null;
-		const nextLine = i < lines.length - 1 ? lines[i + 1] : null;
+		const prevLine = lines[i - 1] ?? "";
+		const nextLine = lines[i + 1] ?? "";
 
 		if (isHeading) {
 			// Rule 1: Blank line before heading (except start of file)
@@ -21,7 +21,7 @@ function ensureHeadingBlankLines(content: string): RuleResult {
 			result.push(line);
 
 			// Rule 2: Blank line after heading unless another heading follows
-			if (nextLine !== null && nextLine !== "" && !/^#{1,6}\s/.test(nextLine)) {
+			if (nextLine !== "" && !/^#{1,6}\s/.test(nextLine)) {
 				result.push("");
 				changesCount++;
 			}

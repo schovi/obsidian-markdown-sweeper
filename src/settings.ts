@@ -47,7 +47,7 @@ export class SweeperSettingsTab extends PluginSettingTab {
 		const { containerEl } = this;
 		containerEl.empty();
 
-		containerEl.createEl("h2", { text: "Behavior" });
+		new Setting(containerEl).setName("Behavior").setHeading();
 
 		new Setting(containerEl)
 			.setName("Clean on save")
@@ -79,7 +79,7 @@ export class SweeperSettingsTab extends PluginSettingTab {
 					})
 			);
 
-		containerEl.createEl("h2", { text: "Cleanup Rules" });
+		new Setting(containerEl).setName("Cleanup rules").setHeading();
 
 		new Setting(containerEl)
 			.setName("Preset")
@@ -109,13 +109,12 @@ export class SweeperSettingsTab extends PluginSettingTab {
 			text: allCollapsed ? "Expand all" : "Collapse all",
 			cls: "sweeper-collapse-btn",
 		});
-		collapseBtn.addEventListener("click", async () => {
+		collapseBtn.addEventListener("click", () => {
 			const newState = !allCollapsed;
 			for (const group of ruleGroups) {
 				this.plugin.settings.collapsedGroups[group] = newState;
 			}
-			await this.plugin.saveSettings();
-			this.display();
+			void this.plugin.saveSettings().then(() => this.display());
 		});
 
 		for (const group of ruleGroups) {
@@ -164,14 +163,13 @@ export class SweeperSettingsTab extends PluginSettingTab {
 		});
 
 		if (isCollapsed) {
-			rulesContainer.style.display = "none";
+			rulesContainer.addClass("is-collapsed");
 		}
 
-		header.addEventListener("click", async () => {
+		header.addEventListener("click", () => {
 			const nowCollapsed = !this.plugin.settings.collapsedGroups[group];
 			this.plugin.settings.collapsedGroups[group] = nowCollapsed;
-			await this.plugin.saveSettings();
-			this.display();
+			void this.plugin.saveSettings().then(() => this.display());
 		});
 
 		for (const rule of groupRules) {

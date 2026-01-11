@@ -193,3 +193,7 @@
 .sweeper-group-rules {
 	padding-left: 8px;
 }
+
+.sweeper-group-rules.is-collapsed {
+	display: none;
+}

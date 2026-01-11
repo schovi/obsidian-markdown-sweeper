@@ -8,6 +8,17 @@ import {
 	migrateSettings,
 } from "./settings";
 
+declare module "obsidian" {
+	interface App {
+		commands?: {
+			commands?: Record<
+				string,
+				{ checkCallback?: (checking: boolean) => boolean }
+			>;
+		};
+	}
+}
+
 export default class SweeperPlugin extends Plugin {
 	settings: SweeperSettings;
 	private originalCheckCallback: ((checking: boolean) => boolean) | null = null;
@@ -31,7 +42,7 @@ export default class SweeperPlugin extends Plugin {
 
 		this.addCommand({
 			id: "quick-cleanup",
-			name: "Quick Cleanup (no preview)",
+			name: "Quick cleanup (no preview)",
 			editorCallback: (editor: Editor) => {
 				this.runQuickCleanup(editor);
 			},
@@ -39,9 +50,9 @@ export default class SweeperPlugin extends Plugin {
 
 		this.addCommand({
 			id: "paste-and-clean",
-			name: "Paste and Clean",
+			name: "Paste and clean",
 			editorCallback: (editor: Editor) => {
-				this.pasteAndClean(editor);
+				void this.pasteAndClean(editor);
 			},
 		});
 
@@ -56,8 +67,7 @@ export default class SweeperPlugin extends Plugin {
 	}
 
 	private hookSaveCommand() {
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		const commands = (this.app as any).commands?.commands;
+		const commands = this.app.commands?.commands;
 		const saveCommand = commands?.["editor:save-file"];
 
 		if (saveCommand?.checkCallback) {
@@ -283,8 +293,7 @@ export default class SweeperPlugin extends Plugin {
 
 	onunload() {
 		if (this.originalCheckCallback) {
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			const commands = (this.app as any).commands?.commands;
+			const commands = this.app.commands?.commands;
 			const saveCommand = commands?.["editor:save-file"];
 			if (saveCommand) {
 				saveCommand.checkCallback = this.originalCheckCallback;
