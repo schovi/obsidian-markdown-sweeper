@@ -2,10 +2,11 @@ import { RuleResult, RuleDefinition } from "./types";
 
 function normalizeHorizontalRules(content: string): RuleResult {
 	let changesCount = 0;
+	let result = content;
 
 	// Match various horizontal rule formats:
 	// ***, ___, - - -, etc. (3+ chars, optionally with spaces)
-	const result = content.replace(
+	result = result.replace(
 		/^[ \t]*((\*[ \t]*){3,}|(_[ \t]*){3,}|(- [ \t]*){2,}-)[ \t]*$/gm,
 		(match) => {
 			if (match.trim() === "---") {
@@ -15,6 +16,13 @@ function normalizeHorizontalRules(content: string): RuleResult {
 			return "---";
 		}
 	);
+
+	// Convert Unicode horizontal line characters to ---
+	// ⸻ (two-em dash), ─ (box light), ━ (box heavy), ═ (box double), — (em dash repeated)
+	result = result.replace(/^[ \t]*[⸻─━═—]{1,}[ \t]*$/gm, () => {
+		changesCount++;
+		return "---";
+	});
 
 	return { content: result, changesCount };
 }

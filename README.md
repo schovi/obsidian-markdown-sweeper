@@ -99,6 +99,7 @@ You can also switch to **Custom** mode and toggle individual rules.
 
 | Rule | Preset | Example |
 |------|--------|---------|
+| Invisible characters | Minimal | Removes zero-width chars, converts non-breaking space |
 | Trailing whitespace | Minimal | `text··` → `text` |
 | Multiple spaces | Standard | `too····many` → `too many` |
 | Tabs to spaces | Standard | `→item` → `··item` |
@@ -108,6 +109,8 @@ You can also switch to **Custom** mode and toggle individual rules.
 
 | Rule | Preset | Example |
 |------|--------|---------|
+| Bullet characters | Standard | `• ○ ● ▸` → `- item` |
+| Unicode checkboxes | Standard | `☐ ☑ ☒` → `- [ ]` / `- [x]` |
 | List markers | Standard | `* item` → `- item` |
 | Checkboxes | Standard | `- [] task` → `- [ ] task` |
 | Empty list items | Standard | `- ` (empty) → removed |
@@ -129,6 +132,7 @@ You can also switch to **Custom** mode and toggle individual rules.
 
 | Rule | Preset | Example |
 |------|--------|---------|
+| Numbered headers | Aggressive | `1 —` / `I —` / `A —` → `## 1.` / `## I.` / `## A.` |
 | Heading spaces | Standard | `##Title` → `## Title` |
 | Fix heading level gaps | Aggressive | `# H1` → `### H3` becomes `## H3` |
 

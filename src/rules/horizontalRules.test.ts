@@ -25,6 +25,14 @@ describe("horizontalRulesRule", () => {
 		expect(result.content).toBe("---");
 		expect(result.changesCount).toBe(0);
 	});
+
+	it("converts Unicode horizontal line characters", () => {
+		expect(horizontalRulesRule.fn("⸻").content).toBe("---");
+		expect(horizontalRulesRule.fn("─────").content).toBe("---");
+		expect(horizontalRulesRule.fn("━━━━━").content).toBe("---");
+		expect(horizontalRulesRule.fn("═════").content).toBe("---");
+		expect(horizontalRulesRule.fn("———").content).toBe("---");
+	});
 });
 
 describe("horizontalRulesDedupeRule", () => {

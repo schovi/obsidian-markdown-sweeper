@@ -1,4 +1,6 @@
 import { RuleDefinition } from "./types";
+import { invisibleCharactersRule } from "./invisibleCharacters";
+import { unicodeCheckboxesRule } from "./unicodeCheckboxes";
 import { tabsToSpacesRule } from "./tabsToSpaces";
 import { trailingWhitespaceContentRule, trailingWhitespaceBlankRule } from "./trailingWhitespace";
 import { leadingIndentationRule } from "./leadingIndentation";
@@ -12,6 +14,7 @@ import { checkboxesRule } from "./checkboxes";
 import { multipleSpacesRule } from "./multipleSpaces";
 import { blankLinesBetweenListItemsRule, multipleBlankLinesRule } from "./blankLines";
 import { listMarkersRule } from "./listMarkers";
+import { bulletCharactersRule } from "./bulletCharacters";
 import { fixIndentationRule } from "./fixIndentation";
 import { emptyListItemsRule } from "./emptyListItems";
 import { eofNewlineRule } from "./eofNewline";
@@ -22,9 +25,13 @@ import { tagNormalizationRule } from "./tagNormalization";
 import { codeFencesRule } from "./codeFences";
 import { emphasisRule } from "./emphasis";
 import { headingLevelsRule } from "./headingLevels";
+import { numberedHeadersRule } from "./numberedHeaders";
 import { lineLeadingWhitespaceRule } from "./lineLeadingWhitespace";
 
 export const rules: RuleDefinition[] = [
+	// Invisible characters (run first to clean up hidden junk)
+	invisibleCharactersRule,
+
 	// Blank lines
 	multipleBlankLinesRule,
 	blankLinesBetweenListItemsRule,
@@ -38,6 +45,8 @@ export const rules: RuleDefinition[] = [
 	leadingIndentationRule,
 
 	// Lists
+	bulletCharactersRule,
+	unicodeCheckboxesRule,
 	listMarkersRule,
 	checkboxesRule,
 	emptyListItemsRule,
@@ -53,6 +62,7 @@ export const rules: RuleDefinition[] = [
 	codeFencesRule,
 
 	// Headings
+	numberedHeadersRule,
 	headingSpacesRule,
 	headingLevelsRule,
 
