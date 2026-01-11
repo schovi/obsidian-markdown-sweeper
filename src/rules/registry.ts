@@ -25,6 +25,7 @@ import { tagNormalizationRule } from "./tagNormalization";
 import { codeFencesRule } from "./codeFences";
 import { emphasisRule } from "./emphasis";
 import { headingLevelsRule } from "./headingLevels";
+import { headingBlankLinesRule } from "./headingBlankLines";
 import { numberedHeadersRule } from "./numberedHeaders";
 import { lineLeadingWhitespaceRule } from "./lineLeadingWhitespace";
 
@@ -67,6 +68,7 @@ export const rules: RuleDefinition[] = [
 	// Headings
 	headingSpacesRule,
 	headingLevelsRule,
+	headingBlankLinesRule,
 
 	// HTML (standard: convert known HTML, decode safe entities)
 	htmlTagsRule,
