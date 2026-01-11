@@ -44,6 +44,9 @@ export const rules: RuleDefinition[] = [
 	tabsToSpacesRule,
 	leadingIndentationRule,
 
+	// Numbered pseudo-headers (must run before Lists to avoid 1.1 being treated as list)
+	numberedHeadersRule,
+
 	// Lists
 	bulletCharactersRule,
 	unicodeCheckboxesRule,
@@ -62,7 +65,6 @@ export const rules: RuleDefinition[] = [
 	codeFencesRule,
 
 	// Headings
-	numberedHeadersRule,
 	headingSpacesRule,
 	headingLevelsRule,
 

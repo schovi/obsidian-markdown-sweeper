@@ -71,4 +71,18 @@ describe("headingSpacesRule", () => {
 		expect(result.content).toBe(input);
 		expect(result.changesCount).toBe(0);
 	});
+
+	it("does not modify line with multiple tags", () => {
+		const input = "#tag-one #tag-two #tag-three";
+		const result = headingSpacesRule.fn(input);
+		expect(result.content).toBe(input);
+		expect(result.changesCount).toBe(0);
+	});
+
+	it("still fixes single tag that looks like header", () => {
+		const input = "#tag";
+		const result = headingSpacesRule.fn(input);
+		expect(result.content).toBe("# tag");
+		expect(result.changesCount).toBe(1);
+	});
 });
