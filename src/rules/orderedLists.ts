@@ -23,7 +23,7 @@ function renumberOrderedLists(content: string): RuleResult {
 			continue;
 		}
 
-		const [, indent, currentNum, dot] = match;
+		const [, indent, currentNum] = match;
 		const indentLevel = indent.length;
 
 		// Reset counters for deeper levels when we go back up

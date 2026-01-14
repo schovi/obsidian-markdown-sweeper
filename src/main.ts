@@ -142,7 +142,7 @@ export default class SweeperPlugin extends Plugin {
 	private runCleanup() {
 		const view = this.app.workspace.getActiveViewOfType(MarkdownView);
 		if (!view) {
-			new Notice("No active markdown file");
+			new Notice("No active Markdown file");
 			return;
 		}
 

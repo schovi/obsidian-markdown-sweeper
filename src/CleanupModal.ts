@@ -1,5 +1,5 @@
 import { App, Modal } from "obsidian";
-import { diffLines, diffChars, Change } from "diff";
+import { diffLines, diffChars } from "diff";
 import { CleanupSummary, formatSummary } from "./rules";
 
 interface LinePair {

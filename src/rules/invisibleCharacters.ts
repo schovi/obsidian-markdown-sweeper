@@ -8,7 +8,7 @@ function cleanInvisibleCharacters(content: string): RuleResult {
 	// Remove zero-width characters
 	// U+200B zero-width space, U+200C zero-width non-joiner,
 	// U+200D zero-width joiner, U+FEFF BOM/zero-width no-break space
-	result = result.replace(/[\u200B\u200C\u200D\uFEFF]/g, () => {
+	result = result.replace(/\u200B|\u200C|\u200D|\uFEFF/g, () => {
 		changesCount++;
 		return "";
 	});

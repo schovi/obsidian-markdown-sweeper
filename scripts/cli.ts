@@ -1,15 +1,15 @@
 #!/usr/bin/env npx tsx
 import * as fs from "fs";
-import { applyAllRules } from "./rules";
-import { getPresetRules } from "./presets";
-import { PresetTier } from "./rules/types";
+import { applyAllRules } from "../src/rules";
+import { getPresetRules } from "../src/presets";
+import { PresetTier } from "../src/rules/types";
 
 const args = process.argv.slice(2);
 const verbose = args.includes("-v") || args.includes("--verbose");
 const filteredArgs = args.filter((a) => a !== "-v" && a !== "--verbose");
 
 if (filteredArgs.length === 0 || args.includes("--help") || args.includes("-h")) {
-	console.error(`Usage: npx tsx src/cli.ts <file> [preset] [-v]
+	console.error(`Usage: npx tsx scripts/cli.ts <file> [preset] [-v]
 
 Arguments:
   file     Path to markdown file to clean
@@ -17,9 +17,9 @@ Arguments:
   -v       Verbose output (show rule changes to stderr)
 
 Example:
-  npx tsx src/cli.ts examples/mess.md
-  npx tsx src/cli.ts examples/mess.md aggressive
-  npx tsx src/cli.ts examples/mess.md standard -v`);
+  npx tsx scripts/cli.ts examples/mess.md
+  npx tsx scripts/cli.ts examples/mess.md aggressive
+  npx tsx scripts/cli.ts examples/mess.md standard -v`);
 	process.exit(args.includes("--help") || args.includes("-h") ? 0 : 1);
 }
 
